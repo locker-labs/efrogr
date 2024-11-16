@@ -12,14 +12,17 @@
     "@dynamic-labs/ethereum": "^3.6.3",
     "@dynamic-labs/global-wallet": "^3.6.3",
     "@dynamic-labs/sdk-react-core": "^3.6.3",
+    "@dynamic-labs/wagmi-connector": "^3.6.3",
     "@p5-wrapper/next": "^1.0.3",
     "@p5-wrapper/react": "^4.4.2",
+    "@tanstack/react-query": "^5.60.5",
     "next": "14.2.18",
     "p5": "^1.11.1",
     "pino-pretty": "^13.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "viem": "^2.21.45"
+    "viem": "^2.21.45",
+    "wagmi": "^2.12.33"
   },
   "devDependencies": {
     "@types/node": "^20",

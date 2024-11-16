@@ -18,6 +18,7 @@ import {
   useTelegramLogin,
   useDynamicContext,
 } from "@/lib/dynamic";
+import { useAccount } from "wagmi";
 
 //IMPORT
 import Frog from "@/game-objects/frog.js";
@@ -268,6 +269,7 @@ export default function Page() {
   const { sdkHasLoaded, user } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { address, isConnected, chain } = useAccount();
   const [userDirection, setUserDirection] = useState<{
     direction: EUserDirection;
     key: number;
@@ -307,9 +309,9 @@ export default function Page() {
         <div>
           {isLoading ? (
             <Spinner />
-          ) : (
+          ) : isConnected ? (
             <NextReactP5Wrapper sketch={sketch} userDirection={userDirection} />
-          )}
+          ) : null}
         </div>
         <div className="mt-4 flex space-x-2">
           <button
