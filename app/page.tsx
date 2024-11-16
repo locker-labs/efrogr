@@ -122,19 +122,26 @@ const sketch: Sketch = (p5) => {
   p5.updateWithProps = (props) => {
     const { direction } = props.userDirection;
     if (direction) {
-      switch (direction) {
-        case EUserDirection.UP:
-          frog.move(0, -1);
-          break;
-        case EUserDirection.DOWN:
-          frog.move(0, 1);
-          break;
-        case EUserDirection.LEFT:
-          frog.move(-1, 0);
-          break;
-        case EUserDirection.RIGHT:
-          frog.move(1, 0);
-          break;
+      if (
+        gameState === EGameState.START_SCREEN &&
+        direction !== EUserDirection.NONE
+      ) {
+        gameState = EGameState.GAME;
+      } else {
+        switch (direction) {
+          case EUserDirection.UP:
+            frog.move(0, -1);
+            break;
+          case EUserDirection.DOWN:
+            frog.move(0, 1);
+            break;
+          case EUserDirection.LEFT:
+            frog.move(-1, 0);
+            break;
+          case EUserDirection.RIGHT:
+            frog.move(1, 0);
+            break;
+        }
       }
     }
   };
