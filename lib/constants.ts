@@ -1,7 +1,7 @@
 // general game variables
 export const grid = 50;
-export const canvasWidth = 550;
-export const canvasHeight = 500;
+export const canvasWidth = 400;
+export const canvasHeight = 350;
 export enum EGameState {
   START_SCREEN = "START_SCREEN",
   GAME = "GAME",

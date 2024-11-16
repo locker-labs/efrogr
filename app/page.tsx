@@ -1,8 +1,8 @@
-/* eslint-disable */
-
 "use client";
 
-import React, { useRef, useState } from "react";
+/* eslint-disable */
+
+import React, { useEffect, useRef, useState } from "react";
 import { type Sketch } from "@p5-wrapper/react";
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import {
@@ -13,12 +13,19 @@ import {
   KEYCODE_SPACE,
   EUserDirection,
 } from "@/lib/constants";
+import {
+  DynamicWidget,
+  useTelegramLogin,
+  useDynamicContext,
+} from "@/lib/dynamic";
 
 //IMPORT
 import Frog from "@/game-objects/frog.js";
 import Car from "@/game-objects/car.js";
 import Log from "@/game-objects/log.js";
 import Scenery from "@/game-objects/scenery.js";
+import Spinner from "@/components/Spinner";
+import Link from "next/link";
 
 //VARIABLES
 // class variabless
@@ -258,6 +265,9 @@ const sketch: Sketch = (p5) => {
 };
 
 export default function Page() {
+  const { sdkHasLoaded, user } = useDynamicContext();
+  const { telegramSignIn } = useTelegramLogin();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [userDirection, setUserDirection] = useState<{
     direction: EUserDirection;
     key: number;
@@ -265,6 +275,20 @@ export default function Page() {
     direction: EUserDirection.NONE,
     key: 0,
   });
+
+  useEffect(() => {
+    console.log("sdkHasLoaded", sdkHasLoaded);
+    if (!sdkHasLoaded) return;
+
+    const signIn = async () => {
+      if (!user) {
+        await telegramSignIn({ forceCreateUser: true });
+      }
+      setIsLoading(false);
+    };
+
+    signIn();
+  }, [sdkHasLoaded]);
 
   const handleDirectionChange = (direction: EUserDirection) => {
     setUserDirection({
@@ -274,42 +298,52 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div>
-        <NextReactP5Wrapper sketch={sketch} userDirection={userDirection} />
+    <>
+      <main className="py-3 flex flex-col items-center space-y-3">
+        <img src="./efrogr.png" alt="Efrogr by Locker" className="w-24" />
+        <DynamicWidget />
+      </main>
+      <div className="flex flex-col justify-center items-center">
+        <div>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <NextReactP5Wrapper sketch={sketch} userDirection={userDirection} />
+          )}
+        </div>
+        <div className="mt-4 flex space-x-2">
+          <button
+            onClick={() => handleDirectionChange(EUserDirection.LEFT)}
+            className="rounded-md bg-blue-500 text-white px-4 py-2"
+          >
+            &lt; Move Left
+          </button>
+          <button
+            onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
+            className="rounded-md bg-blue-500 text-white px-4 py-2"
+          >
+            Move Right &gt;
+          </button>
+          <button
+            onClick={() => handleDirectionChange(EUserDirection.UP)}
+            className="rounded-md bg-blue-500 text-white px-4 py-2"
+          >
+            Move Up
+          </button>
+          <button
+            onClick={() => handleDirectionChange(EUserDirection.DOWN)}
+            className="rounded-md bg-blue-500 text-white px-4 py-2"
+          >
+            Move Down
+          </button>
+        </div>
       </div>
-      <div className="mt-4 flex space-x-2">
-        <button
-          onClick={() => handleDirectionChange(EUserDirection.LEFT)}
-          className="rounded-md bg-blue-500 text-white px-4 py-2"
-        >
-          Move Left
-        </button>
-        <button
-          onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
-          className="btn"
-        >
-          Move Right
-        </button>
-        <button
-          onClick={() => handleDirectionChange(EUserDirection.UP)}
-          className="btn"
-        >
-          Move Up
-        </button>
-        <button
-          onClick={() => handleDirectionChange(EUserDirection.DOWN)}
-          className="btn"
-        >
-          Move Down
-        </button>
-        <button
-          onClick={() => handleDirectionChange(EUserDirection.NONE)}
-          className="btn"
-        >
-          Start Game
-        </button>
-      </div>
-    </div>
+
+      <footer className="py-5">
+        <p className="footer-text">
+          Made by <Link href="https://locker.money">Locker</Link>
+        </p>
+      </footer>
+    </>
   );
 }
