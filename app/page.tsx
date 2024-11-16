@@ -12,6 +12,8 @@ import {
   EGameState,
   KEYCODE_SPACE,
   EUserDirection,
+  GAME_HOME_TITLE,
+  GAME_HOME_SUBTITLE,
 } from "@/lib/constants";
 import {
   DynamicWidget,
@@ -29,7 +31,7 @@ import Spinner from "@/components/Spinner";
 import Link from "next/link";
 
 //VARIABLES
-// class variabless
+// class variables
 let frog;
 let cars = [];
 let logs = [];
@@ -84,9 +86,9 @@ function startingScreen(p5: any) {
   // p5.textFont(pixelFont);
   p5.textAlign(p5.CENTER);
   p5.textSize(46);
-  p5.text("Efrogr", canvasWidth / 2, canvasHeight / 2 - 20);
+  p5.text(GAME_HOME_TITLE, canvasWidth / 2, canvasHeight / 2 - 20);
   p5.textSize(16);
-  p5.text("by Locker", canvasWidth / 2, canvasHeight / 2 + 10);
+  p5.text(GAME_HOME_SUBTITLE, canvasWidth / 2, canvasHeight / 2 + 10);
   p5.pop();
 }
 
@@ -301,11 +303,11 @@ export default function Page() {
 
   return (
     <>
-      <main className="py-3 flex flex-col items-center space-y-3">
+      <main className="py-3 flex flex-col items-center space-y-3 max-w-400">
         <img src="./efrogr.png" alt="Efrogr by Locker" className="w-24" />
-        <DynamicWidget />
+        {!isLoading && <DynamicWidget />}
       </main>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center max-w-400">
         <div>
           {isLoading ? (
             <Spinner />
@@ -313,35 +315,37 @@ export default function Page() {
             <NextReactP5Wrapper sketch={sketch} userDirection={userDirection} />
           ) : null}
         </div>
-        <div className="mt-4 flex space-x-2">
-          <button
-            onClick={() => handleDirectionChange(EUserDirection.LEFT)}
-            className="rounded-md bg-blue-500 text-white px-4 py-2"
-          >
-            &lt; Move Left
-          </button>
-          <button
-            onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
-            className="rounded-md bg-blue-500 text-white px-4 py-2"
-          >
-            Move Right &gt;
-          </button>
+        <div className="mt-4 flex flex-col space-y-1 w-2/3 text-sm">
           <button
             onClick={() => handleDirectionChange(EUserDirection.UP)}
-            className="rounded-md bg-blue-500 text-white px-4 py-2"
+            className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
           >
-            Move Up
+            &#8593; Up &#8593;
           </button>
+          <div className="flex space-x-1 flex-row">
+            <button
+              onClick={() => handleDirectionChange(EUserDirection.LEFT)}
+              className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+            >
+              &#8592; Left
+            </button>
+            <button
+              onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
+              className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+            >
+              Right &#8594;
+            </button>
+          </div>
           <button
             onClick={() => handleDirectionChange(EUserDirection.DOWN)}
-            className="rounded-md bg-blue-500 text-white px-4 py-2"
+            className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
           >
-            Move Down
+            &#8595; Down &#8595;
           </button>
         </div>
       </div>
 
-      <footer className="py-5">
+      <footer className="py-5 max-w-400">
         <p className="footer-text">
           Made by <Link href="https://locker.money">Locker</Link>
         </p>

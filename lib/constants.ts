@@ -19,3 +19,6 @@ export enum EUserDirection {
 
 // keycodes
 export const KEYCODE_SPACE = 32;
+
+export const GAME_HOME_TITLE = "Play and win";
+export const GAME_HOME_SUBTITLE = "Press any button below to start";
