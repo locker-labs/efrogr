@@ -9,5 +9,13 @@ export enum EGameState {
   OUT_OF_TIME = "OUT_OF_TIME",
 }
 
+export enum EUserDirection {
+  UP = "UP",
+  DOWN = "DOWN",
+  LEFT = "LEFT",
+  RIGHT = "RIGHT",
+  NONE = "NONE",
+}
+
 // keycodes
 export const KEYCODE_SPACE = 32;
