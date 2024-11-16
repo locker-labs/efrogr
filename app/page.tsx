@@ -5,7 +5,7 @@
 import React from "react";
 import { type Sketch } from "@p5-wrapper/react";
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
-import { canvasHeight, canvasWidth, grid } from "@/lib/constants";
+import { canvasHeight, canvasWidth, grid, EGameState, KEYCODE_SPACE } from "@/lib/constants";
 
 //IMPORT
 import Frog from "@/game-objects/frog.js";
@@ -20,7 +20,7 @@ let cars = [];
 let logs = [];
 let scenery;
 
-let gameState = 1;
+let gameState = EGameState.START_SCREEN;
 
 let countdown = 360;
 let score = 0;
@@ -29,7 +29,7 @@ let gameIsActive = true;
 
 
 function gameOver() {
-  gameState = 3;
+  gameState = EGameState.GAME_OVER;
   console.log("Game Over");
   //show an game over screen with highscore and stuff
   level = 1;
@@ -71,10 +71,10 @@ function startingScreen(p5: any) {
   // p5.textFont(pixelFont);
   p5.textAlign(p5.CENTER);
   p5.textSize(46);
-  p5.text("Welcome to Frogger", canvasWidth / 2, canvasHeight / 2 - 20);
+  p5.text("Efrogr", canvasWidth / 2, canvasHeight / 2 - 20);
   p5.textSize(16);
   p5.text(
-    "Press Spacebar to Start, Good Luck!",
+    "by Locker",
     canvasWidth / 2,
     canvasHeight / 2 + 10
   );
@@ -90,7 +90,9 @@ function resetGame(p5) {
     canvasWidth / 2 - grid / 2,
     canvasHeight - grid + 10,
     grid * 0.5,
-    0.1
+    0.1,
+    gameWon,
+    p5
   );
 
   frog.attach(null);
@@ -109,6 +111,11 @@ function resetGame(p5) {
   // updateLogs();
 }
 
+export function gameWon(p5) {
+  score = score + 100;
+  level = level + 0.15;
+  resetGame(p5);
+}
 
 const sketch: Sketch = (p5) => {
   p5.setup = () => {
@@ -125,12 +132,76 @@ const sketch: Sketch = (p5) => {
   }
 
   p5.draw = () => {
-    if (gameState === 1) {
+    if (gameState === EGameState.START_SCREEN) {
       startingScreen(p5);
-    } 
+    } else if (gameState === EGameState.GAME) {
+      //general
+      scenery.draw();
+  
+      //cars
+      for (let i = 0; i < cars.length; i++) {
+        cars[i].update();
+        cars[i].draw();
+  
+        if (frog.overlaps(cars[i])) {
+          gameOver();
+        }
+      }
+  
+      //logs
+      for (let i = 0; i < logs.length; i++) {
+        logs[i].update();
+        logs[i].drawLog();
+      }
+  
+      //frog
+      if (frog.y < p5.height - grid * 5 && frog.y > grid * 2) {
+        let safe = false;
+  
+        for (let i = 0; i < logs.length; i++) {
+          if (frog.overlaps(logs[i])) {
+            safe = true;
+            frog.attach(logs[i]);
+          }
+        }
+  
+        if (!safe) {
+          gameOver();
+        }
+      }
+    }
   };
+
+  p5.keyPressed = () => {
+    const { keyCode, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW } = p5;
+    if (gameState === EGameState.START_SCREEN && keyCode === KEYCODE_SPACE) {
+      gameState = EGameState.GAME;
+    }
+  
+    if (gameState === EGameState.GAME) {
+      if (keyCode === LEFT_ARROW || keyCode === 65) {
+        frog.move(-1, 0);
+      } else if (keyCode === RIGHT_ARROW || keyCode === 68) {
+        frog.move(1, 0);
+      } else if (keyCode === UP_ARROW || keyCode === 87) {
+        frog.move(0, -1);
+      } else if (keyCode === DOWN_ARROW || keyCode === 83) {
+        frog.move(0, 1);
+      }
+    }
+    console.log(keyCode);
+    if (gameState === EGameState.GAME_OVER && keyCode === KEYCODE_SPACE) {
+      gameState = EGameState.GAME;
+      score = 0;
+    }
+  
+    if (gameState === EGameState.OUT_OF_TIME && keyCode === KEYCODE_SPACE) {
+      gameState = EGameState.GAME;
+      score = 0;
+    }
+  }
 };
 
 export default function Page() {
-  return <NextReactP5Wrapper sketch={sketch} />;
+  return <div className="flex justify-center items-center"><NextReactP5Wrapper sketch={sketch} /></div>;
 }

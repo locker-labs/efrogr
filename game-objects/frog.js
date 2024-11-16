@@ -4,13 +4,14 @@ import Hitbox from "./hitbox.js";
 import { grid } from "@/lib/constants";
 import { canvasHeight } from "@/lib/constants";
 import { canvasWidth } from "@/lib/constants";
-import { gameWon } from "@/lib/constants";
 
 export default class Frog extends Hitbox {
-  constructor(x, y, width, s) {
+  constructor(x, y, width, s, gameWon, p5) {
     super(x, y, width, width);
     this.attached = null;
     this.size = s;
+    this.gameWon = gameWon;
+    this.p5 = p5;
   }
 
   attach(log) {
@@ -307,7 +308,7 @@ export default class Frog extends Hitbox {
   checkForWin(winAreaX, winAreaY) {
     if (this.y < 50) {
       console.log("you won");
-      gameWon();
+      this.gameWon(this.p5);
     }
   }
 }

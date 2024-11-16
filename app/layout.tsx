@@ -26,9 +26,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`flex flex-col ${geistSans.variable} ${geistMono.variable} antialiased items-center`}
       >
-        {children}
+      <main>
+          <img
+            src="./Assets/frogger.png"
+            alt="Efrogr by Locker"
+          />
+          {children}
+          <p>Controls: W,A,S,D or Arrow Keys</p>
+      </main>
+      <footer>
+        <p className="footer-text">Made with ❤ by Liam Melkersson 2024</p>
+      </footer>
+        
       </body>
     </html>
   );
