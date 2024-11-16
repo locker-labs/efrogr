@@ -41,8 +41,8 @@ function screenBackground(p5) {
   scenery.draw();
   //cars
   for (let i = 0; i < cars.length; i++) {
-    cars[i].update();
-    cars[i].draw();
+    // cars[i].update();
+    // cars[i].draw();
 
     if (frog.overlaps(cars[i])) {
       // gameOver();
@@ -51,8 +51,8 @@ function screenBackground(p5) {
 
   //logs
   for (let i = 0; i < logs.length; i++) {
-    logs[i].update();
-    logs[i].drawLog();
+    // logs[i].update();
+    // logs[i].drawLog();
   }
 
   //Start Screen
@@ -111,7 +111,7 @@ function resetGame(p5) {
   // updateLogs();
 }
 
-export function gameWon(p5) {
+function gameWon(p5) {
   score = score + 100;
   level = level + 0.15;
   resetGame(p5);
@@ -140,8 +140,8 @@ const sketch: Sketch = (p5) => {
   
       //cars
       for (let i = 0; i < cars.length; i++) {
-        cars[i].update();
-        cars[i].draw();
+        // cars[i].update();
+        // cars[i].draw();
   
         if (frog.overlaps(cars[i])) {
           gameOver();
@@ -150,8 +150,8 @@ const sketch: Sketch = (p5) => {
   
       //logs
       for (let i = 0; i < logs.length; i++) {
-        logs[i].update();
-        logs[i].drawLog();
+        // logs[i].update();
+        // logs[i].drawLog();
       }
   
       //frog
