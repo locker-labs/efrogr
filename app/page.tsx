@@ -305,11 +305,11 @@ export default function Page() {
 
   return (
     <>
-      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[400px]">
+      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
         <img src="./efrogr.png" alt="Efrogr by Locker" className="w-12" />
         {!isLoading && <DynamicWidget />}
       </main>
-      <div className="flex flex-col items-center w-[400px] min-h-[90vh]">
+      <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
         <GameBanner />
         <div>
           {isLoading ? (
@@ -350,7 +350,7 @@ export default function Page() {
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
-        <div className="w-[400px] flex justify-center flex-col space-y-2">
+        <div className="w-[350px] flex justify-center flex-col space-y-2">
           <div className="flex flex-row justify-center space-x-2">
             <Link
               href="https://twitter.com/locker_money"
