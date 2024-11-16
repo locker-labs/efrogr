@@ -29,6 +29,8 @@ import Log from "@/game-objects/log.js";
 import Scenery from "@/game-objects/scenery.js";
 import Spinner from "@/components/Spinner";
 import Link from "next/link";
+import GameInfo from "@/components/GameInfo";
+import GameBanner from "@/components/GameBanner";
 
 //VARIABLES
 // class variables
@@ -303,11 +305,12 @@ export default function Page() {
 
   return (
     <>
-      <main className="py-3 flex flex-col items-center space-y-3 max-w-400">
-        <img src="./efrogr.png" alt="Efrogr by Locker" className="w-24" />
+      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[400px]">
+        <img src="./efrogr.png" alt="Efrogr by Locker" className="w-12" />
         {!isLoading && <DynamicWidget />}
       </main>
-      <div className="flex flex-col justify-center items-center max-w-400">
+      <div className="flex flex-col items-center w-[400px] min-h-[90vh]">
+        <GameBanner />
         <div>
           {isLoading ? (
             <Spinner />
@@ -318,37 +321,59 @@ export default function Page() {
         <div className="mt-4 flex flex-col space-y-1 w-2/3 text-sm">
           <button
             onClick={() => handleDirectionChange(EUserDirection.UP)}
-            className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
           >
             &#8593; Up &#8593;
           </button>
           <div className="flex space-x-1 flex-row">
             <button
               onClick={() => handleDirectionChange(EUserDirection.LEFT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
             >
               &#8592; Left
             </button>
             <button
               onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
             >
               Right &#8594;
             </button>
           </div>
           <button
             onClick={() => handleDirectionChange(EUserDirection.DOWN)}
-            className="rounded-md bg-locker-500 text-white px-4 py-2 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
           >
             &#8595; Down &#8595;
           </button>
         </div>
+        <GameInfo />
       </div>
 
-      <footer className="py-5 max-w-400">
-        <p className="footer-text">
-          Made by <Link href="https://locker.money">Locker</Link>
-        </p>
+      <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
+        <div className="w-[400px] flex justify-center flex-col space-y-2">
+          <div className="flex flex-row justify-center space-x-2">
+            <Link
+              href="https://twitter.com/locker_money"
+              className="footer-text text-center text-sm text-gray-700"
+            >
+              X
+            </Link>
+            <Link
+              href="https://discord.gg/locker"
+              className="footer-text text-center text-sm text-gray-700"
+            >
+              Telegram
+            </Link>
+          </div>
+          <div className="flex flex-row justify-center">
+            <Link
+              href="https://locker.money"
+              className="footer-text text-center text-sm text-gray-700"
+            >
+              Made by Locker
+            </Link>
+          </div>
+        </div>
       </footer>
     </>
   );
