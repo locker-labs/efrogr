@@ -1,10 +1,10 @@
 import Hitbox from "./hitbox.js";
 
 //variable imports
-import { grid } from "./game.js";
-import { canvasHeight } from "./game.js";
-import { canvasWidth } from "./game.js";
-import { gameWon } from "./game.js";
+import { grid } from "@/lib/constants";
+import { canvasHeight } from "@/lib/constants";
+import { canvasWidth } from "@/lib/constants";
+import { gameWon } from "@/lib/constants";
 
 export default class Frog extends Hitbox {
   constructor(x, y, width, s) {

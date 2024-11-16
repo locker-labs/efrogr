@@ -1,11 +1,12 @@
 //variable imports
-import { canvasWidth } from "./game.js";
-import { grid } from "./game.js";
+import { canvasWidth } from "@/lib/constants";
+import { grid } from "@/lib/constants";
 
 export default class Scenery {
-  constructor(x, y) {
+  constructor(x, y, p5) {
     this.x = x;
     this.y = y;
+    this.p5 = p5;
     this.grassBlades = [];
     this.grassBladeSettings = {
       amount: 3000,
@@ -54,43 +55,43 @@ export default class Scenery {
       waterBubble: "#6495ED",
       road: "#50514e",
     };
-    push();
-    noStroke();
+    this.p5.push();
+    this.p5.noStroke();
 
     //GRASS
-    fill(backgroundColor.grass);
-    rect(0, grid * 9, canvasWidth, grid);
-    rect(0, grid * 5, canvasWidth, grid);
-    rect(0, 0, canvasWidth, grid * 2);
+    this.p5.fill(backgroundColor.grass);
+    this.p5.rect(0, grid * 9, canvasWidth, grid);
+    this.p5.rect(0, grid * 5, canvasWidth, grid);
+    this.p5.rect(0, 0, canvasWidth, grid * 2);
 
     this.grassBlades;
     for (let grassBlade of this.grassBlades) {
-      fill(backgroundColor.grassBlade);
-      rect(grassBlade.x, grassBlade.y, grassBlade.size);
+      this.p5.fill(backgroundColor.grassBlade);
+      this.p5.rect(grassBlade.x, grassBlade.y, grassBlade.size);
     }
 
     //ROAD
-    push();
+    this.p5.push();
     let strokeW = 1;
-    stroke("#FFF");
-    strokeWeight(strokeW);
-    fill(backgroundColor.road);
-    rect(-strokeW, grid * 6, canvasWidth + strokeW * 2, grid);
-    rect(-strokeW, grid * 7, canvasWidth + strokeW * 2, grid);
-    rect(-strokeW, grid * 8, canvasWidth + strokeW * 2, grid);
+    this.p5.stroke("#FFF");
+    this.p5.strokeWeight(strokeW);
+    this.p5.fill(backgroundColor.road);
+    this.p5.rect(-strokeW, grid * 6, canvasWidth + strokeW * 2, grid);
+    this.p5.rect(-strokeW, grid * 7, canvasWidth + strokeW * 2, grid);
+    this.p5.rect(-strokeW, grid * 8, canvasWidth + strokeW * 2, grid);
     //rect(-strokeWeight, 220, 500, 70);
-    pop();
+    this.p5.pop();
     //texture the road
 
     //WATER
-    fill(backgroundColor.water);
-    rect(0, grid * 2, canvasWidth, grid * 3);
+    this.p5.fill(backgroundColor.water);
+    this.p5.rect(0, grid * 2, canvasWidth, grid * 3);
 
     //waterBubbles
     this.createBubbles();
     for (let waterBubble of this.waterBubbles) {
-      fill(backgroundColor.waterBubble);
-      rect(waterBubble.x, waterBubble.y, waterBubble.size);
+      this.p5.fill(backgroundColor.waterBubble);
+      this.p5.rect(waterBubble.x, waterBubble.y, waterBubble.size);
 
       waterBubble.x = waterBubble.x + waterBubble.speed;
 
@@ -99,6 +100,6 @@ export default class Scenery {
       }
     }
 
-    pop();
+    this.p5.pop();
   }
 }
