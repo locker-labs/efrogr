@@ -31,6 +31,7 @@ import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import GameInfo from "@/components/GameInfo";
 import GameBanner from "@/components/GameBanner";
+import { IEfrogrUser } from "@/lib/types";
 
 //VARIABLES
 // class variables
@@ -269,7 +270,11 @@ const sketch: Sketch = (p5) => {
   };
 };
 
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const { sdkHasLoaded, user } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -281,7 +286,49 @@ export default function Page() {
     direction: EUserDirection.NONE,
     key: 0,
   });
+  const [efrogrUser, setFrogrUser] = useState<IEfrogrUser | null>(null);
 
+  const telegramAuthToken = searchParams.telegramAuthToken as string;
+
+  // create user record if it doesn't exist
+  useEffect(() => {
+    if (!telegramAuthToken) return;
+    if (!user) return;
+    const createUser = async () => {
+      const response = await fetch("api/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dynamicUserId: user.userId,
+          address: user.verifiedCredentials[0].address,
+          telegramAuthToken,
+        }),
+      }).catch((error) => {
+        console.error("Could not createUser:", error);
+      });
+      if (response) {
+        const { efrogrUser } = await response.json();
+        console.log(efrogrUser);
+        setFrogrUser(efrogrUser);
+      }
+    };
+
+    createUser();
+  }, [telegramAuthToken, user]);
+  // if croakLeft = -1, then the user has not played the game yet
+  // let them play once for free
+  // record efrogr_played with croakUsed = 0 and upgrade croakLeft to 0
+
+  // if 0 <= croakLeft < 100,
+  // get balance of this wallet via wagmi. if it's 0, then display modal to deposit into wallet
+  // if there's balance, then display modal to buy 10 games for 1,000 croak by sending to Locker treasury
+
+  // if croackLeft > 100
+  // let them play the game
+
+  // when game ends, create new efrogr_played record with croakUsed = 100
   useEffect(() => {
     console.log("sdkHasLoaded", sdkHasLoaded);
     if (!sdkHasLoaded) return;
