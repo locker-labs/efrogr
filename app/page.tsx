@@ -39,20 +39,24 @@ let frog;
 let cars = [];
 let logs = [];
 let scenery;
+let efrogrUser: IEfrogrUser | null = null;
 
 let gameState = EGameState.START_SCREEN;
 
-let countdown = 360;
+const COUNTDOWN_START = 360;
+let countdown = COUNTDOWN_START;
 let score = 0;
 let level = 1;
 let gameIsActive = true;
 
-function gameOver() {
+function gameOver(p5) {
   gameState = EGameState.GAME_OVER;
   console.log("Game Over");
+  trackPlayed(p5);
+
   //show an game over screen with highscore and stuff
   level = 1;
-  // resetGame();
+  resetGame(p5);
 }
 
 //base for the screen with text (starting screen and game over screen)
@@ -64,7 +68,7 @@ function screenBackground(p5) {
     // cars[i].draw();
 
     if (frog.overlaps(cars[i])) {
-      // gameOver();
+      gameOver(p5);
     }
   }
 
@@ -95,6 +99,59 @@ function startingScreen(p5: any) {
   p5.pop();
 }
 
+function gameOverScreen(p5) {
+  screenBackground(p5);
+
+  p5.push();
+  p5.fill("#FFF");
+  // p5.textFont(pixelFont);
+  p5.textAlign(p5.CENTER);
+  p5.textSize(46);
+  p5.text("Game Over", canvasWidth / 2, canvasHeight / 2 - 20);
+  p5.textSize(16);
+  p5.text(
+    "Your score was " + score + ", try again!",
+    canvasWidth / 2,
+    canvasHeight / 2 + 10
+  );
+  p5.text("Press Spacebar to Restart", canvasWidth / 2, canvasHeight / 2 + 30);
+  p5.pop();
+}
+
+function ranOutOfTimeScreen(p5) {
+  screenBackground(p5);
+
+  p5.push();
+  p5.fill("#FFF");
+  // p5.textFont(pixelFont);
+  p5.textAlign(p5.CENTER);
+  p5.textSize(46);
+  p5.text("Game Over", canvasWidth / 2, canvasHeight / 2 - 20);
+  p5.textSize(16);
+  p5.text("You ran out of time :(", canvasWidth / 2, canvasHeight / 2 + 10);
+  p5.text(
+    "Your score was " + score + ", try again!",
+    canvasWidth / 2,
+    canvasHeight / 2 + 30
+  );
+  p5.text("Click to Restart", canvasWidth / 2, canvasHeight / 2 + 50);
+  p5.pop();
+}
+
+function trackPlayed(p5) {
+  if (score === 0) return;
+  console.log("trackPlayed", efrogrUser, score);
+  const path = "api/trackPlayed";
+  const data = {
+    efrogrUserId: efrogrUser!.id,
+    score,
+  };
+
+  p5.httpPost(path, "json", data, function (result) {
+    console.log("tracked played", result);
+  });
+}
+
 function resetGame(p5) {
   //resets background
   scenery = new Scenery(0, 0, p5);
@@ -111,11 +168,11 @@ function resetGame(p5) {
 
   frog.attach(null);
 
-  //reset gameIsActive varaible
+  //reset gameIsActive variable
   gameIsActive = true;
 
   //reset countdown
-  countdown = 360;
+  countdown = COUNTDOWN_START;
 
   //updates the speeds of the logs and cars depending on level
   // updateObjectSpeed();
@@ -126,14 +183,18 @@ function resetGame(p5) {
 }
 
 function gameWon(p5) {
-  score = score + 100;
+  score = Math.round(score + level + countdown / 10);
   level = level + 0.15;
   resetGame(p5);
 }
 
 const sketch: Sketch = (p5) => {
   p5.updateWithProps = (props) => {
-    const { direction } = props.userDirection;
+    console.log("Props updated", props);
+    const { efrogrUser: user, userDirection } = props;
+    const { direction } = userDirection;
+
+    efrogrUser = user;
     if (direction) {
       if (
         gameState === EGameState.START_SCREEN &&
@@ -185,7 +246,7 @@ const sketch: Sketch = (p5) => {
         // cars[i].draw();
 
         if (frog.overlaps(cars[i])) {
-          gameOver();
+          gameOver(p5);
         }
       }
 
@@ -207,7 +268,7 @@ const sketch: Sketch = (p5) => {
         }
 
         if (!safe) {
-          gameOver();
+          gameOver(p5);
         }
       } else {
         frog.attach(null);
@@ -221,8 +282,14 @@ const sketch: Sketch = (p5) => {
       p5.fill("#FFF");
       // textFont(pixelFont);
       p5.textSize(24);
-      p5.text("time: " + Math.round(countdown / 36) + "s", 450, 25);
-      p5.text("score: " + score + "p", 20, 25);
+      const statHeight = 25;
+      const statPadding = 20;
+      p5.text(
+        "time: " + Math.round(countdown / 36) + "s",
+        canvasWidth - 75 - statPadding,
+        statHeight
+      );
+      p5.text("score: " + score, statPadding, statHeight);
       p5.pop();
 
       //game mechanics
@@ -233,10 +300,16 @@ const sketch: Sketch = (p5) => {
       if (countdown < 0) {
         gameIsActive = false;
         gameState = EGameState.OUT_OF_TIME;
+        trackPlayed(p5);
+        level = 1;
         resetGame(p5);
       }
 
       frog.checkForWin(canvasWidth, 100);
+    } else if (gameState === EGameState.GAME_OVER) {
+      gameOverScreen(p5);
+    } else if (gameState === EGameState.OUT_OF_TIME) {
+      ranOutOfTimeScreen(p5);
     }
   };
 
@@ -286,14 +359,15 @@ export default function Page({
     direction: EUserDirection.NONE,
     key: 0,
   });
-  const [efrogrUser, setFrogrUser] = useState<IEfrogrUser | null>(null);
+  const [efrogrUser, setEfrogrUser] = useState<IEfrogrUser | null>(null);
 
   const telegramAuthToken = searchParams.telegramAuthToken as string;
 
   // create user record if it doesn't exist
   useEffect(() => {
-    if (!telegramAuthToken) return;
+    console.log("Efrogr User", telegramAuthToken, user);
     if (!user) return;
+    if (!telegramAuthToken) return;
     const createUser = async () => {
       const response = await fetch("api/createUser", {
         method: "POST",
@@ -308,10 +382,11 @@ export default function Page({
       }).catch((error) => {
         console.error("Could not createUser:", error);
       });
+      console.log("Got response from user");
       if (response) {
         const { efrogrUser } = await response.json();
         console.log(efrogrUser);
-        setFrogrUser(efrogrUser);
+        setEfrogrUser(efrogrUser);
       }
     };
 
@@ -362,7 +437,11 @@ export default function Page({
           {isLoading ? (
             <Spinner />
           ) : isConnected ? (
-            <NextReactP5Wrapper sketch={sketch} userDirection={userDirection} />
+            <NextReactP5Wrapper
+              sketch={sketch}
+              userDirection={userDirection}
+              efrogrUser={efrogrUser}
+            />
           ) : null}
         </div>
         <div className="mt-4 flex flex-col space-y-1 w-2/3 text-sm">

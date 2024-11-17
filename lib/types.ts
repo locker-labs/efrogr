@@ -16,3 +16,10 @@ export type IEfrogrUser = {
   tgJson: IEfrogrTgJson;
   croakLeft: string;
 };
+
+export type IEfrogrPlay = {
+  id?: string;
+  efrogrUserId: string;
+  croakUsed: string;
+  score: number;
+};

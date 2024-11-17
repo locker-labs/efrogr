@@ -20,6 +20,17 @@ export default async function createEfrogrUser({
   ) as IEfrogrTgJson;
   console.log("tgJson", tgJson);
 
+  // return existing user if exists
+  const { data: users, error: usersError } = await supabaseServer
+    .from(TABLES.EFROGR_USERS)
+    .select("*")
+    .eq("dynamicUserId", dynamicUserId);
+
+  if (!usersError && users && users.length > 0) {
+    return users[0] as IEfrogrUser;
+  }
+
+  // otherwise create new users
   const newUser: IEfrogrUser = {
     dynamicUserId,
     address,
@@ -31,7 +42,7 @@ export default async function createEfrogrUser({
 
   const { data, error } = await supabaseServer
     .from(TABLES.EFROGR_USERS)
-    .upsert(newUser, { onConflict: "dynamicUserId", ignoreDuplicates: true })
+    .insert(newUser)
     .select();
 
   console.log("data", data);
