@@ -10,11 +10,14 @@ import {
 } from "@/components/ui/sheet";
 import {
   CROAK_ADDRESS,
+  JACKPOT_ADDRESS,
   MIN_CROAK_DEPOSIT,
   MIN_ETH_DEPOSIT,
 } from "@/lib/constants";
 import { Loader2, Clipboard, CheckCircle } from "lucide-react";
 import { formatUnits } from "viem";
+import { linea } from "viem/chains";
+import { useBalance } from "wagmi";
 
 export function DepositSheet({
   open,
@@ -37,14 +40,21 @@ export function DepositSheet({
     }, 2000); // Clear feedback after 2 seconds
   };
 
+  const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
+    address: JACKPOT_ADDRESS,
+    token: CROAK_ADDRESS,
+    chainId: linea.id,
+    query: { refetchInterval: 5_000 },
+  });
+
   return (
     <Sheet open={open}>
       <SheetContent className="no-close">
         <SheetHeader>
           <SheetTitle>Deposit to continue</SheetTitle>
           <SheetDescription className="text-sm">
-            {formatUnits(MIN_CROAK_DEPOSIT, 18)} CROAK and{" "}
-            {formatUnits(MIN_ETH_DEPOSIT, 18)} ETH on Linea
+            {BigInt(formatUnits(MIN_CROAK_DEPOSIT, 18)).toLocaleString()} CROAK
+            and {formatUnits(MIN_ETH_DEPOSIT, 18)} ETH on Linea
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col break-all space-y-3 text-center my-16">
@@ -68,7 +78,12 @@ export function DepositSheet({
         </div>
         <SheetFooter className="flex flex-col">
           <p className="text-xs break-all text-green-500">
-            Current jackpot: 1,234,567 CROAK
+            Jackpot:{" "}
+            {isJackpotLoading
+              ? "Loading..."
+              : `${BigInt(
+                  formatUnits(jackpotBalance?.value || BigInt(0), 18)
+                ).toLocaleString()} CROAK`}
           </p>
           <p className="text-muted-foreground text-xs break-all">
             ETH balance: {formatUnits(eth, 18)}

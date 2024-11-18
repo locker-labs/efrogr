@@ -8,7 +8,7 @@ export default function GameBanner({ lives }: { lives: bigint }) {
     address: JACKPOT_ADDRESS,
     token: CROAK_ADDRESS,
     chainId: linea.id,
-    query: { refetchInterval: 10_000 },
+    query: { refetchInterval: 60_000 },
   });
 
   return (
