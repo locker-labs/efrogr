@@ -59,13 +59,13 @@ let gameIsActive = true;
 
 //row objects
 let row1 = {
-  amount: 2,
+  amount: 1,
   gap: 300,
   speed: 2 * level,
   length: 2,
 };
 let row2 = {
-  amount: 3,
+  amount: 2,
   gap: 300,
   speed: -2.5 * level,
   length: 2,
@@ -78,7 +78,7 @@ let row3 = {
 };
 //row4 is empty
 let row5 = {
-  amount: 3,
+  amount: 4,
   gap: 200,
   speed: 3.2 * level,
   length: 2,
@@ -90,7 +90,7 @@ let row6 = {
   length: 2,
 };
 let row7 = {
-  amount: 3,
+  amount: 2,
   gap: 280,
   speed: 4.2 * level,
   length: 2,
@@ -723,27 +723,27 @@ export default function Page({
         <div className="mt-4 flex flex-col space-y-1 w-2/3 text-sm">
           <button
             onClick={() => handleDirectionChange(EUserDirection.UP)}
-            className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
           >
             &#8593; Up &#8593;
           </button>
           <div className="flex space-x-1 flex-row">
             <button
               onClick={() => handleDirectionChange(EUserDirection.LEFT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
             >
               &#8592; Left
             </button>
             <button
               onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
             >
               Right &#8594;
             </button>
           </div>
           <button
             onClick={() => handleDirectionChange(EUserDirection.DOWN)}
-            className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
           >
             &#8595; Down &#8595;
           </button>
