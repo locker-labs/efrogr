@@ -23,7 +23,7 @@ export default function GameBanner({ lives }: { lives: bigint }) {
         {isJackpotLoading
           ? "Loading..."
           : `${BigInt(
-              formatUnits(jackpotBalance?.value!, 18)
+              formatUnits(jackpotBalance?.value || BigInt(0), 18)
             ).toLocaleString()} CROAK`}
       </p>
     </div>

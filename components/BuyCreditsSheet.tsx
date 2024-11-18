@@ -4,7 +4,6 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetFooter,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Loader2 } from "lucide-react";
@@ -20,6 +19,7 @@ export function BuyCreditsSheet({
 }: {
   open: boolean;
   efrogrUserId: string;
+  // @typescript-eslint/no-explicit-any
   setEfrogrUser: any;
 }) {
   const { primaryWallet } = useDynamicContext();
@@ -87,6 +87,7 @@ export function BuyCreditsSheet({
         data,
       };
 
+      // @typescript-eslint/no-explicit-any
       const hash = await walletClient.sendTransaction(transaction as any);
       setTxnHash(hash);
 
