@@ -1,5 +1,4 @@
 import { TABLES } from "@/lib/constants";
-import trackPlayed from "@/lib/db/trackPlayed";
 import supabaseServer from "@/lib/supabase/supabaseServer";
 import { NextResponse } from "next/server";
 

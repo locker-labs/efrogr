@@ -9,7 +9,7 @@ export default function GameInfo({
   leaderboard: ILeaderboard[];
   userInfo: ILeaderboard | null;
 }) {
-  let leaderboardList = leaderboard
+  const leaderboardList = leaderboard
     .sort((a, b) => b.highScore - a.highScore)
     .map((ranking, index) => {
       return (
