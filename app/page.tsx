@@ -44,8 +44,8 @@ import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 //VARIABLES
 // class variables
 let frog;
-let cars = [];
-let logs = [];
+let cars: Car[] = [];
+let logs: Log[] = [];
 let scenery;
 let efrogrUser: IEfrogrUser | null = null;
 
@@ -56,6 +56,55 @@ let countdown = COUNTDOWN_START;
 let score = 0;
 let level = 1;
 let gameIsActive = true;
+
+//row objects
+let row1 = {
+  amount: 2,
+  gap: 300,
+  speed: 2 * level,
+  length: 2,
+};
+let row2 = {
+  amount: 3,
+  gap: 300,
+  speed: -2.5 * level,
+  length: 2,
+};
+let row3 = {
+  amount: 3,
+  gap: 250,
+  speed: 2.5 * level,
+  length: 2,
+};
+//row4 is empty
+let row5 = {
+  amount: 3,
+  gap: 200,
+  speed: 3.2 * level,
+  length: 2,
+};
+let row6 = {
+  amount: 3,
+  gap: 180,
+  speed: -1.8 * level,
+  length: 2,
+};
+let row7 = {
+  amount: 3,
+  gap: 280,
+  speed: 4.2 * level,
+  length: 2,
+};
+
+function updateCars(p5) {
+  cars = [];
+  spawnCars(p5);
+}
+
+function updateLogs(p5) {
+  logs = [];
+  spawnLogs(p5);
+}
 
 function gameOver(p5) {
   gameState = EGameState.GAME_OVER;
@@ -72,8 +121,8 @@ function screenBackground(p5) {
   scenery.draw();
   //cars
   for (let i = 0; i < cars.length; i++) {
-    // cars[i].update();
-    // cars[i].draw();
+    cars[i].update();
+    cars[i].draw();
 
     if (frog.overlaps(cars[i])) {
       gameOver(p5);
@@ -82,8 +131,8 @@ function screenBackground(p5) {
 
   //logs
   for (let i = 0; i < logs.length; i++) {
-    // logs[i].update();
-    // logs[i].drawLog();
+    logs[i].update();
+    logs[i].drawLog();
   }
 
   //Start Screen
@@ -160,6 +209,15 @@ function trackPlayed(p5) {
   });
 }
 
+function updateObjectSpeed() {
+  row1.speed = 2 * level;
+  row2.speed = -2.5 * level;
+  row3.speed = 2.5 * level;
+  row5.speed = 3.2 * level;
+  row6.speed = -1.8 * level;
+  row7.speed = 4.2 * level;
+}
+
 function resetGame(p5) {
   //resets background
   scenery = new Scenery(0, 0, p5);
@@ -183,17 +241,135 @@ function resetGame(p5) {
   countdown = COUNTDOWN_START;
 
   //updates the speeds of the logs and cars depending on level
-  // updateObjectSpeed();
+  updateObjectSpeed();
 
   //updates cars and logs (so we can change the speed depending on level)
-  // updateCars();
-  // updateLogs();
+  updateCars(p5);
+  updateLogs(p5);
 }
 
 function gameWon(p5) {
   score = Math.round(score + level + countdown / 10);
   level = level + 0.15;
   resetGame(p5);
+}
+
+function spawnCars(p5) {
+  let index = 0;
+  //initializes a variable to keep track of the position in
+  //the arrays where new objects are added, starting from the beginning of the array
+
+  //row 1 - cars
+  for (let i = 0; i < row1.amount; i++) {
+    let x = i * row1.gap;
+
+    cars[index] = new Car(
+      x,
+      p5.height - grid * 2,
+      grid * row1.length,
+      grid,
+      row1.speed,
+      0.2,
+      Math.floor(Math.random() * 3),
+      false,
+      p5
+    );
+
+    index++;
+  }
+
+  //row 2 - cars (rotated)
+  for (let i = 0; i < row2.amount; i++) {
+    let x = i * row2.gap;
+
+    cars[index] = new Car(
+      x,
+      p5.height - grid * 3,
+      grid * row2.length,
+      grid,
+      row2.speed,
+      0.2,
+      Math.floor(Math.random() * 3),
+      true,
+      p5
+    );
+
+    index++;
+  }
+
+  //row 3 - cars
+  for (let i = 0; i < row3.amount; i++) {
+    let x = i * row3.gap;
+
+    cars[index] = new Car(
+      x,
+      p5.height - grid * 4,
+      grid * row3.length,
+      grid,
+      row3.speed,
+      0.2,
+      Math.floor(Math.random() * 3),
+      false,
+      p5
+    );
+
+    index++;
+  }
+}
+
+function spawnLogs(p5) {
+  let index = 0;
+
+  //row 5 - logs
+  for (let i = 0; i < row5.amount; i++) {
+    let x = i * row5.gap;
+
+    logs[index] = new Log(
+      x,
+      p5.height - grid * 6 + 10,
+      grid * row5.length - 25,
+      grid,
+      row5.speed,
+      0.2,
+      p5
+    );
+
+    index++;
+  }
+
+  //row 6 - logs
+  for (let i = 0; i < row6.amount; i++) {
+    let x = i * row6.gap;
+
+    logs[index] = new Log(
+      x,
+      p5.height - grid * 7 + 10,
+      grid * row6.length - 25,
+      grid,
+      row6.speed,
+      0.2,
+      p5
+    );
+
+    index++;
+  }
+
+  //row 7 - logs
+  for (let i = 0; i < row7.amount; i++) {
+    let x = i * row7.gap;
+
+    logs[index] = new Log(
+      x,
+      p5.height - grid * 8 + 10,
+      grid * row7.length - 25,
+      grid,
+      row7.speed,
+      0.2,
+      p5
+    );
+
+    index++;
+  }
 }
 
 const sketch: Sketch = (p5) => {
@@ -234,11 +410,11 @@ const sketch: Sketch = (p5) => {
     p5.frameRate(30);
     resetGame(p5);
 
-    // spawnCars();
+    spawnCars(p5);
 
     //row 4 - empty
 
-    // spawnLogs();
+    spawnLogs(p5);
   };
 
   p5.draw = () => {
@@ -250,8 +426,8 @@ const sketch: Sketch = (p5) => {
 
       //cars
       for (let i = 0; i < cars.length; i++) {
-        // cars[i].update();
-        // cars[i].draw();
+        cars[i].update();
+        cars[i].draw();
 
         if (frog.overlaps(cars[i])) {
           gameOver(p5);
@@ -260,8 +436,8 @@ const sketch: Sketch = (p5) => {
 
       //logs
       for (let i = 0; i < logs.length; i++) {
-        // logs[i].update();
-        // logs[i].drawLog();
+        logs[i].update();
+        logs[i].drawLog();
       }
 
       //frog
@@ -547,27 +723,27 @@ export default function Page({
         <div className="mt-4 flex flex-col space-y-1 w-2/3 text-sm">
           <button
             onClick={() => handleDirectionChange(EUserDirection.UP)}
-            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
           >
             &#8593; Up &#8593;
           </button>
           <div className="flex space-x-1 flex-row">
             <button
               onClick={() => handleDirectionChange(EUserDirection.LEFT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
             >
               &#8592; Left
             </button>
             <button
               onClick={() => handleDirectionChange(EUserDirection.RIGHT)}
-              className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+              className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
             >
               Right &#8594;
             </button>
           </div>
           <button
             onClick={() => handleDirectionChange(EUserDirection.DOWN)}
-            className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+            className="rounded-md bg-locker-500 text-white px-4 py-3 w-full"
           >
             &#8595; Down &#8595;
           </button>
