@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Loader2 } from "lucide-react";
-import { encodeFunctionData, parseUnits } from "viem";
+import { encodeFunctionData } from "viem";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { isEthereumWallet } from "@dynamic-labs/ethereum";
 import { CROAK_ADDRESS, CROAK_BUNDLE, LOCKER_TREASURY } from "@/lib/constants";
