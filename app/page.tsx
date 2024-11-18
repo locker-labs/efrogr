@@ -324,7 +324,8 @@ const sketch: Sketch = (p5) => {
   p5.mousePressed = () => {
     if (
       gameState === EGameState.GAME_OVER ||
-      gameState === EGameState.OUT_OF_TIME
+      gameState === EGameState.OUT_OF_TIME ||
+      gameState === EGameState.START_SCREEN
     ) {
       gameState = EGameState.GAME;
       score = 0;
