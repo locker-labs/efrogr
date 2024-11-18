@@ -395,20 +395,6 @@ export default function Page({
     query: { refetchInterval: 5000 },
   });
 
-  // open modal if no croak left, croak balance is below 100 and eth balance is 0
-  const doesNeedCroak =
-    !isCroakBalanceLoading &&
-    croakBalance &&
-    croakBalance?.value < CROAK_BUNDLE &&
-    efrogrUser &&
-    Number(efrogrUser.croakLeft) >= 0 &&
-    Number(efrogrUser.croakLeft) < CROAK_PER_PLAY;
-
-  const doesNeedEth =
-    !isEthBalanceLoading && ethBalance && ethBalance.value < MIN_ETH_DEPOSIT;
-
-  const doesNeedDeposit = doesNeedCroak || doesNeedEth;
-
   // console.log("croakBalance", croakBalance);
   // console.log("ethBalance", ethBalance);
 
@@ -515,6 +501,22 @@ export default function Page({
   };
 
   const lives = BigInt(efrogrUser?.croakLeft || "0") / CROAK_PER_PLAY;
+
+  const needsCredits =
+    !!efrogrUser &&
+    Number(efrogrUser.croakLeft) >= 0 &&
+    Number(efrogrUser.croakLeft) < CROAK_PER_PLAY;
+
+  // open modal if no croak left, croak balance is below 100 and eth balance is 0
+  const doesNeedCroak =
+    !isCroakBalanceLoading &&
+    croakBalance &&
+    croakBalance?.value < CROAK_BUNDLE;
+
+  const doesNeedEth =
+    !isEthBalanceLoading && ethBalance && ethBalance.value < MIN_ETH_DEPOSIT;
+
+  const doesNeedDeposit = (doesNeedCroak || doesNeedEth) && needsCredits;
 
   const doesNeedCredits =
     !!efrogrUser &&

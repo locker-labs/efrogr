@@ -89,7 +89,7 @@ export function DepositSheet({
             ETH balance: {formatUnits(eth, 18)}
           </p>
           <p className="text-muted-foreground text-xs break-all">
-            CROAK balance:{formatUnits(croak, 18)}
+            CROAK balance: {formatUnits(croak, 18)}
           </p>
           <p className="text-muted-foreground text-xs break-all">
             CROAK address: {CROAK_ADDRESS}
