@@ -1,3 +1,4 @@
+import * as clipboard from "clipboard-polyfill";
 import React, { useState } from "react";
 import {
   Sheet,
@@ -29,7 +30,7 @@ export function DepositSheet({
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(depositAddress);
+    clipboard.writeText(depositAddress);
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);

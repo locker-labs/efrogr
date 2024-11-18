@@ -23,3 +23,11 @@ export type IEfrogrPlay = {
   croakUsed: string;
   score: number;
 };
+
+export type ILeaderboard = {
+  efrogrUserId: string;
+  highScore: number;
+  croakUsed: number;
+  croakLeft: number;
+  tgUsername: string;
+};

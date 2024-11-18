@@ -35,7 +35,7 @@ import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import GameInfo from "@/components/GameInfo";
 import GameBanner from "@/components/GameBanner";
-import { IEfrogrUser } from "@/lib/types";
+import { IEfrogrUser, ILeaderboard } from "@/lib/types";
 import { linea } from "viem/chains";
 import { zeroAddress } from "viem";
 import { DepositSheet } from "@/components/DepositSheet";
@@ -291,10 +291,10 @@ const sketch: Sketch = (p5) => {
       // textFont(pixelFont);
       p5.textSize(24);
       const statHeight = 25;
-      const statPadding = 20;
+      const statPadding = 30;
       p5.text(
         "time: " + Math.round(countdown / 36) + "s",
-        canvasWidth - 75 - statPadding,
+        canvasWidth - 85 - statPadding,
         statHeight
       );
       p5.text("score: " + score, statPadding, statHeight);
@@ -368,6 +368,8 @@ export default function Page({
   const { sdkHasLoaded, user } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [leaderboard, setLeaderboard] = useState<ILeaderboard[]>([]);
+  const [userInfo, setUserInfo] = useState<ILeaderboard | null>(null);
   const { address, isConnected, chain } = useAccount();
   const [userDirection, setUserDirection] = useState<{
     direction: EUserDirection;
@@ -407,15 +409,15 @@ export default function Page({
 
   const doesNeedDeposit = doesNeedCroak || doesNeedEth;
 
-  console.log("croakBalance", croakBalance);
-  console.log("ethBalance", ethBalance);
+  // console.log("croakBalance", croakBalance);
+  // console.log("ethBalance", ethBalance);
 
-  console.log("doesNeedCroak", doesNeedCroak);
-  console.log("doesNeedEth", doesNeedEth);
-  console.log("doesNeedDeposit", doesNeedDeposit);
+  // console.log("doesNeedCroak", doesNeedCroak);
+  // console.log("doesNeedEth", doesNeedEth);
+  // console.log("doesNeedDeposit", doesNeedDeposit);
   // create user record if it doesn't exist
   useEffect(() => {
-    console.log("Efrogr User", telegramAuthToken, user);
+    // console.log("Efrogr User", telegramAuthToken, user);
     if (!user) return;
     if (!telegramAuthToken) return;
     const createUser = async () => {
@@ -432,16 +434,53 @@ export default function Page({
       }).catch((error) => {
         console.error("Could not createUser:", error);
       });
-      console.log("Got response from user");
       if (response) {
         const { efrogrUser } = await response.json();
-        console.log(efrogrUser);
+        console.log("Got response from user!", efrogrUser);
         setEfrogrUser(efrogrUser);
       }
     };
 
     createUser();
   }, [telegramAuthToken, user]);
+
+  // Refresh leaderboard
+  useEffect(() => {
+    const getLeaderboard = async () => {
+      const response = await fetch("api/getLeaderboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          efrogrUserId: efrogrUser?.id,
+        }),
+      }).catch((error) => {
+        console.error("Could not update leaderboard:", error);
+      });
+      if (response) {
+        const { leaderboard: newLeaderboard, user: updatedUser } =
+          await response.json();
+        // console.log("got leaderboard", leaderboard, updatedUser);
+        setLeaderboard(newLeaderboard);
+        setUserInfo(updatedUser);
+        if (updatedUser && efrogrUser)
+          if (
+            updatedUser.croakLeft.toString() !== efrogrUser.croakLeft.toString()
+          )
+            setEfrogrUser({
+              ...efrogrUser,
+              croakLeft: updatedUser.croakLeft.toString(),
+            });
+      }
+    };
+
+    getLeaderboard(); // Fetch immediately
+    const intervalId = setInterval(getLeaderboard, 5000); // Fetch every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on unmount
+  }, [efrogrUser]);
+
   // if croakLeft = -1, then the user has not played the game yet
   // let them play once for free
   // record efrogr_played with croakUsed = 0 and upgrade croakLeft to 0
@@ -476,9 +515,12 @@ export default function Page({
   };
 
   const lives = BigInt(efrogrUser?.croakLeft || "0") / CROAK_PER_PLAY;
-  console.log("lives", lives);
 
-  const doesNeedCredits = !!efrogrUser && lives <= 0 && !doesNeedDeposit;
+  const doesNeedCredits =
+    !!efrogrUser &&
+    lives <= 0 &&
+    !doesNeedDeposit &&
+    Number(efrogrUser.croakLeft) > -1;
 
   return (
     <>
@@ -527,7 +569,11 @@ export default function Page({
             &#8595; Down &#8595;
           </button>
         </div>
-        <GameInfo efrogrUser={efrogrUser} />
+        <GameInfo
+          efrogrUser={efrogrUser}
+          leaderboard={leaderboard}
+          userInfo={userInfo}
+        />
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">

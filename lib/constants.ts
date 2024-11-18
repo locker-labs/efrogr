@@ -31,6 +31,7 @@ export const GAME_OUT_OF_TIME_SUBTITLE = "Keep playing for the jackpot";
 export const TABLES = {
   EFROGR_USERS: "efrogr_users",
   EFROGR_PLAYS: "efrogr_plays",
+  EFROGR_LEADERBOARD: "efrogr_user_stats",
 };
 
 export const CROAK_BUNDLE = BigInt(1000 * 10 ** 18);
