@@ -33,4 +33,9 @@ export const TABLES = {
   EFROGR_PLAYS: "efrogr_plays",
 };
 
+export const CROAK_BUNDLE = BigInt(1000 * 10 ** 18);
 export const CROAK_PER_PLAY = 100;
+export const MIN_CROAK_DEPOSIT = BigInt(1000 * 10 ** 18);
+export const MIN_ETH_DEPOSIT = BigInt(0.00001 * 10 ** 18);
+
+export const CROAK_ADDRESS = "0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF";

@@ -14,13 +14,16 @@ import {
   EUserDirection,
   GAME_HOME_TITLE,
   GAME_HOME_SUBTITLE,
+  CROAK_ADDRESS,
+  CROAK_PER_PLAY,
+  CROAK_BUNDLE,
 } from "@/lib/constants";
 import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
 } from "@/lib/dynamic";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 
 //IMPORT
 import Frog from "@/game-objects/frog.js";
@@ -32,6 +35,10 @@ import Link from "next/link";
 import GameInfo from "@/components/GameInfo";
 import GameBanner from "@/components/GameBanner";
 import { IEfrogrUser } from "@/lib/types";
+import { linea } from "viem/chains";
+import { zeroAddress } from "viem";
+import { DepositSheet } from "@/components/DepositSheet";
+import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 
 //VARIABLES
 // class variables
@@ -134,7 +141,7 @@ function ranOutOfTimeScreen(p5) {
     canvasWidth / 2,
     canvasHeight / 2 + 30
   );
-  p5.text("Click to Restart", canvasWidth / 2, canvasHeight / 2 + 50);
+  p5.text("Click anywhere to restart", canvasWidth / 2, canvasHeight / 2 + 50);
   p5.pop();
 }
 
@@ -313,6 +320,16 @@ const sketch: Sketch = (p5) => {
     }
   };
 
+  p5.mousePressed = () => {
+    if (
+      gameState === EGameState.GAME_OVER ||
+      gameState === EGameState.OUT_OF_TIME
+    ) {
+      gameState = EGameState.GAME;
+      score = 0;
+    }
+  };
+
   p5.keyPressed = () => {
     const { keyCode, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW } = p5;
     if (gameState === EGameState.START_SCREEN && keyCode === KEYCODE_SPACE) {
@@ -331,12 +348,11 @@ const sketch: Sketch = (p5) => {
       }
     }
     console.log(keyCode);
-    if (gameState === EGameState.GAME_OVER && keyCode === KEYCODE_SPACE) {
-      gameState = EGameState.GAME;
-      score = 0;
-    }
-
-    if (gameState === EGameState.OUT_OF_TIME && keyCode === KEYCODE_SPACE) {
+    if (
+      (gameState === EGameState.GAME_OVER ||
+        gameState === EGameState.OUT_OF_TIME) &&
+      keyCode === KEYCODE_SPACE
+    ) {
       gameState = EGameState.GAME;
       score = 0;
     }
@@ -363,6 +379,47 @@ export default function Page({
 
   const telegramAuthToken = searchParams.telegramAuthToken as string;
 
+  const {
+    data: croakBalance,
+    isLoading: isCroakBalanceLoading,
+    refetch: refetchCroakBalance,
+  } = useBalance({
+    address,
+    token: CROAK_ADDRESS,
+    chainId: linea.id,
+    query: { refetchInterval: 5000 },
+  });
+
+  const {
+    data: ethBalance,
+    isLoading: isEthBalanceLoading,
+    refetch: refetchEthBalance,
+  } = useBalance({
+    address,
+    chainId: linea.id,
+    query: { refetchInterval: 5000 },
+  });
+
+  // open modal if no croak left, croak balance is below 100 and eth balance is 0
+  const doesNeedCroak =
+    !isCroakBalanceLoading &&
+    croakBalance &&
+    croakBalance?.value < CROAK_BUNDLE &&
+    efrogrUser &&
+    Number(efrogrUser.croakLeft) >= 0 &&
+    Number(efrogrUser.croakLeft) < CROAK_PER_PLAY;
+
+  const doesNeedEth =
+    !isEthBalanceLoading && ethBalance && ethBalance.value < CROAK_PER_PLAY;
+
+  const doesNeedDeposit = doesNeedCroak || doesNeedEth;
+
+  console.log("croakBalance", croakBalance);
+  console.log("ethBalance", ethBalance);
+
+  console.log("doesNeedCroak", doesNeedCroak);
+  console.log("doesNeedEth", doesNeedEth);
+  console.log("doesNeedDeposit", doesNeedDeposit);
   // create user record if it doesn't exist
   useEffect(() => {
     console.log("Efrogr User", telegramAuthToken, user);
@@ -396,12 +453,12 @@ export default function Page({
   // let them play once for free
   // record efrogr_played with croakUsed = 0 and upgrade croakLeft to 0
 
+  // if croackLeft > 100
+  // let them play the game
+
   // if 0 <= croakLeft < 100,
   // get balance of this wallet via wagmi. if it's 0, then display modal to deposit into wallet
   // if there's balance, then display modal to buy 10 games for 1,000 croak by sending to Locker treasury
-
-  // if croackLeft > 100
-  // let them play the game
 
   // when game ends, create new efrogr_played record with croakUsed = 100
   useEffect(() => {
@@ -425,6 +482,10 @@ export default function Page({
     });
   };
 
+  const lives = Math.floor(Number(efrogrUser?.croakLeft) / CROAK_PER_PLAY);
+
+  const doesNeedCredits = !!efrogrUser && lives <= 0 && !doesNeedDeposit;
+
   return (
     <>
       <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
@@ -432,7 +493,7 @@ export default function Page({
         {!isLoading && <DynamicWidget />}
       </main>
       <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
-        <GameBanner />
+        <GameBanner lives={lives} />
         <div>
           {isLoading ? (
             <Spinner />
@@ -472,7 +533,7 @@ export default function Page({
             &#8595; Down &#8595;
           </button>
         </div>
-        <GameInfo />
+        <GameInfo efrogrUser={efrogrUser} />
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
@@ -501,6 +562,13 @@ export default function Page({
           </div>
         </div>
       </footer>
+      <DepositSheet
+        open={!!doesNeedDeposit}
+        depositAddress={address || "Loading..."}
+        eth={ethBalance?.value || BigInt(0)}
+        croak={croakBalance?.value || BigInt(0)}
+      />
+      <BuyCreditsSheet open={doesNeedCredits} />
     </>
   );
 }
