@@ -21,7 +21,7 @@ export default async function trackPlayed(
 
   // if croakLeft < CROAK_PER_PLAY
   // don't record play
-  const croakLeft = parseInt(user[0].croakLeft);
+  const croakLeft = BigInt(user[0].croakLeft);
 
   const newPlay: IEfrogrPlay = {
     efrogrUserId,
@@ -32,7 +32,7 @@ export default async function trackPlayed(
   // if croakLeft = -1, then the user has not played the game yet
   // record play with croakUsed = 0 and update user.croakLeft to 0
   let newCroakLeft;
-  if (croakLeft === -1) {
+  if (croakLeft === BigInt(-1)) {
     newPlay.croakUsed = "0";
     newCroakLeft = 0;
   } else if (croakLeft < CROAK_PER_PLAY) {

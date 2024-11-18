@@ -1,5 +1,3 @@
-"use server";
-
 import trackPlayed from "@/lib/db/trackPlayed";
 import { NextResponse } from "next/server";
 

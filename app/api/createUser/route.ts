@@ -1,5 +1,3 @@
-"use server";
-
 import createEfrogrUser from "@/lib/db/createUser";
 import { NextResponse } from "next/server";
 

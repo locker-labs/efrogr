@@ -17,6 +17,7 @@ import {
   CROAK_ADDRESS,
   CROAK_PER_PLAY,
   CROAK_BUNDLE,
+  MIN_ETH_DEPOSIT,
 } from "@/lib/constants";
 import {
   DynamicWidget,
@@ -379,22 +380,14 @@ export default function Page({
 
   const telegramAuthToken = searchParams.telegramAuthToken as string;
 
-  const {
-    data: croakBalance,
-    isLoading: isCroakBalanceLoading,
-    refetch: refetchCroakBalance,
-  } = useBalance({
+  const { data: croakBalance, isLoading: isCroakBalanceLoading } = useBalance({
     address,
     token: CROAK_ADDRESS,
     chainId: linea.id,
     query: { refetchInterval: 5000 },
   });
 
-  const {
-    data: ethBalance,
-    isLoading: isEthBalanceLoading,
-    refetch: refetchEthBalance,
-  } = useBalance({
+  const { data: ethBalance, isLoading: isEthBalanceLoading } = useBalance({
     address,
     chainId: linea.id,
     query: { refetchInterval: 5000 },
@@ -410,7 +403,7 @@ export default function Page({
     Number(efrogrUser.croakLeft) < CROAK_PER_PLAY;
 
   const doesNeedEth =
-    !isEthBalanceLoading && ethBalance && ethBalance.value < CROAK_PER_PLAY;
+    !isEthBalanceLoading && ethBalance && ethBalance.value < MIN_ETH_DEPOSIT;
 
   const doesNeedDeposit = doesNeedCroak || doesNeedEth;
 
@@ -482,7 +475,8 @@ export default function Page({
     });
   };
 
-  const lives = Math.floor(Number(efrogrUser?.croakLeft) / CROAK_PER_PLAY);
+  const lives = BigInt(efrogrUser?.croakLeft || "0") / CROAK_PER_PLAY;
+  console.log("lives", lives);
 
   const doesNeedCredits = !!efrogrUser && lives <= 0 && !doesNeedDeposit;
 
@@ -568,7 +562,11 @@ export default function Page({
         eth={ethBalance?.value || BigInt(0)}
         croak={croakBalance?.value || BigInt(0)}
       />
-      <BuyCreditsSheet open={doesNeedCredits} />
+      <BuyCreditsSheet
+        open={doesNeedCredits}
+        efrogrUserId={efrogrUser?.id || ""}
+        setEfrogrUser={setEfrogrUser}
+      />
     </>
   );
 }
