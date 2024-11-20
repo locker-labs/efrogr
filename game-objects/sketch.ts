@@ -85,12 +85,11 @@ function updateLogs(p5) {
 }
 
 function gameOver(p5) {
-  gameState = EGameState.GAME_OVER;
+  gameState = EGameState.START_SCREEN;
   console.log("Game Over");
   trackPlayed(p5);
-  onGameEnd(score);
-
-  //show an game over screen with highscore and stuff
+  onGameEnd(score, EGameState.GAME_OVER);
+  //show a game over screen with high score and stuff
   level = 1;
   resetGame(p5);
 }
@@ -132,45 +131,6 @@ function startingScreen(p5: any) {
   p5.text(GAME_HOME_TITLE, canvasWidth / 2, canvasHeight / 2 - 20);
   p5.textSize(16);
   p5.text(GAME_HOME_SUBTITLE, canvasWidth / 2, canvasHeight / 2 + 10);
-  p5.pop();
-}
-
-function gameOverScreen(p5) {
-  screenBackground(p5);
-
-  p5.push();
-  p5.fill("#FFF");
-  // p5.textFont(pixelFont);
-  p5.textAlign(p5.CENTER);
-  p5.textSize(46);
-  p5.text("Game Over", canvasWidth / 2, canvasHeight / 2 - 20);
-  p5.textSize(16);
-  p5.text(
-    "Your score was " + score + ", try again!",
-    canvasWidth / 2,
-    canvasHeight / 2 + 10
-  );
-  p5.text("Press Spacebar to Restart", canvasWidth / 2, canvasHeight / 2 + 30);
-  p5.pop();
-}
-
-function ranOutOfTimeScreen(p5) {
-  screenBackground(p5);
-
-  p5.push();
-  p5.fill("#FFF");
-  // p5.textFont(pixelFont);
-  p5.textAlign(p5.CENTER);
-  p5.textSize(46);
-  p5.text("Game Over", canvasWidth / 2, canvasHeight / 2 - 20);
-  p5.textSize(16);
-  p5.text("You ran out of time :(", canvasWidth / 2, canvasHeight / 2 + 10);
-  p5.text(
-    "Your score was " + score + ", try again!",
-    canvasWidth / 2,
-    canvasHeight / 2 + 30
-  );
-  p5.text("Click anywhere to restart", canvasWidth / 2, canvasHeight / 2 + 50);
   p5.pop();
 }
 
@@ -368,12 +328,14 @@ const sketch: Sketch = (p5) => {
     menuState = _menuState;
 
     if (direction) {
-      if (
-        gameState === EGameState.START_SCREEN &&
-        direction !== EUserDirection.NONE
-      ) {
+      // Game will initially be loaded with none direction, don't try to move frog
+      if (direction === EUserDirection.NONE) return;
+      if (gameState === EGameState.START_SCREEN) {
+        console.log("start screen ");
         gameState = EGameState.GAME;
+        score = 0;
       } else {
+        console.log("playing screen ");
         switch (direction) {
           case EUserDirection.UP:
             frog.move(0, -1);
@@ -471,36 +433,32 @@ const sketch: Sketch = (p5) => {
 
       if (countdown < 0) {
         gameIsActive = false;
-        gameState = EGameState.OUT_OF_TIME;
+        gameState = EGameState.START_SCREEN;
+        onGameEnd(score, EGameState.OUT_OF_TIME);
         trackPlayed(p5);
         level = 1;
         resetGame(p5);
       }
 
       frog.checkForWin(canvasWidth, 100);
-    } else if (gameState === EGameState.GAME_OVER) {
-      gameOverScreen(p5);
-    } else if (gameState === EGameState.OUT_OF_TIME) {
-      ranOutOfTimeScreen(p5);
     }
   };
 
-  p5.mousePressed = () => {
-    if (
-      gameState === EGameState.GAME_OVER ||
-      gameState === EGameState.OUT_OF_TIME ||
-      gameState === EGameState.START_SCREEN
-    ) {
-      gameState = EGameState.GAME;
-      score = 0;
-    }
-  };
+  // This causes problems with game start if user clicks on a button to start the game
+  // It gets picked up here and in the prop change logic
+  // p5.mousePressed = () => {
+  //   if (
+  //     gameState === EGameState.GAME_OVER ||
+  //     gameState === EGameState.OUT_OF_TIME ||
+  //     gameState === EGameState.START_SCREEN
+  //   ) {
+  //     gameState = EGameState.GAME;
+  //     score = 0;
+  //   }
+  // };
 
   p5.keyPressed = () => {
     const { keyCode, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW } = p5;
-    if (gameState === EGameState.START_SCREEN && keyCode === KEYCODE_SPACE) {
-      gameState = EGameState.GAME;
-    }
 
     if (gameState === EGameState.GAME) {
       if (keyCode === LEFT_ARROW || keyCode === 65) {
@@ -515,9 +473,9 @@ const sketch: Sketch = (p5) => {
     }
     console.log(keyCode);
     if (
-      (gameState === EGameState.GAME_OVER ||
-        gameState === EGameState.OUT_OF_TIME) &&
-      keyCode === KEYCODE_SPACE
+      gameState === EGameState.START_SCREEN ||
+      gameState === EGameState.GAME_OVER ||
+      gameState === EGameState.OUT_OF_TIME
     ) {
       gameState = EGameState.GAME;
       score = 0;

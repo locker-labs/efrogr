@@ -2,7 +2,7 @@
 
 /* eslint-disable */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NextReactP5Wrapper } from "@p5-wrapper/next";
 import {
   EUserDirection,
@@ -12,6 +12,8 @@ import {
   MIN_ETH_DEPOSIT,
   EGameState,
   EMenuState,
+  CROAK_PER_PLAY_FORMATTED,
+  JACKPOT_ADDRESS,
 } from "@/lib/constants";
 import {
   DynamicWidget,
@@ -29,6 +31,7 @@ import { linea } from "viem/chains";
 import { DepositSheet } from "@/components/DepositSheet";
 import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 import sketch from "@/game-objects/sketch";
+import { formatUnits } from "viem";
 
 export default function Page({
   searchParams,
@@ -53,10 +56,15 @@ export default function Page({
     EMenuState.NOT_PLAYING
   );
 
-  const onGameEnd = async (score: number) => {
-    console.log("Game ended with score", score);
+  // When game ends
+  const onGameEnd = useCallback((score: number, gameState: EGameState) => {
+    console.log("Game ended with score", score, gameState);
+    setUserDirection({
+      direction: EUserDirection.NONE,
+      key: Date.now(), // Use the current timestamp as a unique key
+    });
     setMenuState(EMenuState.NOT_PLAYING);
-  };
+  }, []);
 
   const telegramAuthToken = searchParams.telegramAuthToken as string;
 
@@ -83,7 +91,7 @@ export default function Page({
   useEffect(() => {
     // console.log("Efrogr User", telegramAuthToken, user);
     if (!user) return;
-    if (!telegramAuthToken) return;
+    // if (!telegramAuthToken) return;
     const createUser = async () => {
       const response = await fetch("api/createUser", {
         method: "POST",
@@ -106,7 +114,7 @@ export default function Page({
     };
 
     createUser();
-  }, [telegramAuthToken, user]);
+  }, [user]);
 
   // Refresh leaderboard
   useEffect(() => {
@@ -170,6 +178,13 @@ export default function Page({
 
     signIn();
   }, [sdkHasLoaded]);
+
+  const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
+    address: JACKPOT_ADDRESS,
+    token: CROAK_ADDRESS,
+    chainId: linea.id,
+    query: { refetchInterval: 60_000 },
+  });
 
   const handleDirectionChange = (direction: EUserDirection) => {
     setUserDirection({
@@ -249,19 +264,42 @@ export default function Page({
   );
 
   const modeSelector = (
-    <div className="w-full flex flex-col space-y-2 h-[500px] justify-center border-locker-500 border p-3">
-      <button
-        className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
-        onClick={() => setMenuState(EMenuState.PLAYING_JACKPOT)}
-      >
-        Play to win
-      </button>
-      <button
-        className="rounded-md text-gray-500  px-4 py-4 w-full"
-        onClick={() => setMenuState(EMenuState.PLAYING_FREE)}
-      >
-        Free play
-      </button>
+    <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
+      <div>
+        <p className="text-locker-500 text-xl text-center font-semibold">
+          {isJackpotLoading
+            ? null
+            : `${BigInt(
+                formatUnits(jackpotBalance?.value || BigInt(0), 18)
+              ).toLocaleString()} CROAK JACKPOT`}
+        </p>
+      </div>
+
+      <div>
+        <button
+          className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+          onClick={() => setMenuState(EMenuState.PLAYING_JACKPOT)}
+        >
+          <div className="flex flex-col space-y-1">
+            <span className="text-lg">Play to win</span>
+            <span className="text-xs">
+              {CROAK_PER_PLAY_FORMATTED} CROAK per play
+            </span>
+          </div>
+        </button>
+        <button
+          className="rounded-md text-gray-500  px-4 py-4 w-full"
+          onClick={() => setMenuState(EMenuState.PLAYING_FREE)}
+        >
+          Free play
+        </button>
+      </div>
+
+      <GameInfo
+        efrogrUser={efrogrUser}
+        leaderboard={leaderboard}
+        userInfo={userInfo}
+      />
     </div>
   );
 
@@ -272,13 +310,8 @@ export default function Page({
         {!isLoading && <DynamicWidget />}
       </main>
       <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
-        <GameBanner lives={lives} />
+        <GameBanner />
         {menuState === EMenuState.NOT_PLAYING ? modeSelector : gamePlay}
-        <GameInfo
-          efrogrUser={efrogrUser}
-          leaderboard={leaderboard}
-          userInfo={userInfo}
-        />
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">

@@ -27,14 +27,19 @@ export default function GameInfo({
       </>
     ) : null;
 
+  let username = efrogrUser ? efrogrUser?.tgJson?.username : "Loading...";
+
+  // trim ethereum addresses
+  if (username.length === 42)
+    username = `${username.slice(0, 4)}...${username.slice(-4)}`;
+  else username = `@${username}`;
+
   return (
     <div className="flex flex-col w-full text-sm mt-5">
       <div className="flex flex-row justify-between text-xs mt-1">
         <div className="flex flex-col">{leaderboardSection}</div>
         <div className="flex flex-col text-right">
-          <p className="font-bold">
-            {efrogrUser ? `@${efrogrUser?.tgJson?.username}` : "Loading..."}
-          </p>
+          <p className="font-bold">{username}</p>
           {userInfo && (
             <>
               <p>High score: {userInfo.highScore}</p>

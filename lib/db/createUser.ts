@@ -14,10 +14,18 @@ export default async function createEfrogrUser({
   console.log("createEfrogrUser", dynamicUserId, address, telegramAuthToken);
 
   // verify tg info is signed by our bot
-  const tgJson = verifyJwt(
-    telegramAuthToken,
-    process.env.BOT_TOKEN!
-  ) as IEfrogrTgJson;
+  const tgJson = telegramAuthToken
+    ? (verifyJwt(telegramAuthToken, process.env.BOT_TOKEN!) as IEfrogrTgJson)
+    : {
+        authDate: 0,
+        firstName: "",
+        lastName: "",
+        username: address,
+        id: 0,
+        photoURL: "",
+        hash: "",
+        iat: 0,
+      };
   console.log("tgJson", tgJson);
 
   // return existing user if exists
