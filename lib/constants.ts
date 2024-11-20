@@ -2,11 +2,20 @@
 export const grid = 50;
 export const canvasWidth = 350;
 export const canvasHeight = 500;
+
+// state of the actual game
 export enum EGameState {
   START_SCREEN = "START_SCREEN",
   GAME = "GAME",
   GAME_OVER = "GAME_OVER",
   OUT_OF_TIME = "OUT_OF_TIME",
+}
+
+// state of the menu before the game
+export enum EMenuState {
+  NOT_PLAYING = "NOT_PLAYING",
+  PLAYING_FREE = "PLAYING_FREE",
+  PLAYING_JACKPOT = "PLAYING_JACKPOT",
 }
 
 export enum EUserDirection {
@@ -35,7 +44,7 @@ export const TABLES = {
 };
 
 export const CROAK_BUNDLE = BigInt(1000 * 10 ** 18);
-export const CROAK_PER_PLAY = BigInt(200 * 10 ** 18);
+export const CROAK_PER_PLAY = BigInt(300 * 10 ** 18);
 export const MIN_CROAK_DEPOSIT = BigInt(1000 * 10 ** 18);
 export const MIN_ETH_DEPOSIT = BigInt(0.00001 * 10 ** 18);
 
