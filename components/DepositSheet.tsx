@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/sheet";
 import {
   CROAK_ADDRESS,
+  CROAK_BUNDLE_FORMATTED,
   JACKPOT_ADDRESS,
-  MIN_CROAK_DEPOSIT,
   MIN_ETH_DEPOSIT,
 } from "@/lib/constants";
 import { Loader2, Clipboard, CheckCircle } from "lucide-react";
@@ -53,8 +53,8 @@ export function DepositSheet({
         <SheetHeader>
           <SheetTitle>Deposit to continue</SheetTitle>
           <SheetDescription className="text-sm">
-            {BigInt(formatUnits(MIN_CROAK_DEPOSIT, 18)).toLocaleString()} CROAK
-            and {formatUnits(MIN_ETH_DEPOSIT, 18)} ETH on Linea
+            {CROAK_BUNDLE_FORMATTED.toLocaleString()} CROAK and{" "}
+            {formatUnits(MIN_ETH_DEPOSIT, 18)} ETH on Linea
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col break-all space-y-3 text-center my-16">

@@ -4,7 +4,7 @@ import { IEfrogrTgJson, IEfrogrUser } from "../types";
 import verifyJwt from "../verifyJwt";
 import supabaseServer from "@/lib/supabase/supabaseServer";
 
-const DEFAULT_CREDITS = -1;
+const DEFAULT_CREDITS = 0;
 
 export default async function createEfrogrUser({
   dynamicUserId,

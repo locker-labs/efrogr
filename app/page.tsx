@@ -107,9 +107,9 @@ export default function Page({
         console.error("Could not createUser:", error);
       });
       if (response) {
-        const { efrogrUser } = await response.json();
-        console.log("Got response from user!", efrogrUser);
-        setEfrogrUser(efrogrUser);
+        const { efrogrUser: _efrogrUser } = await response.json();
+        console.log("Got response from user!", _efrogrUser);
+        setEfrogrUser(_efrogrUser);
       }
     };
 
@@ -118,7 +118,9 @@ export default function Page({
 
   // Refresh leaderboard
   useEffect(() => {
+    console.log("efrogrUserUpdated", efrogrUser);
     const getLeaderboard = async () => {
+      console.log("fetching leaderboard", efrogrUser);
       const response = await fetch("api/getLeaderboard", {
         method: "POST",
         headers: {
@@ -133,7 +135,7 @@ export default function Page({
       if (response) {
         const { leaderboard: newLeaderboard, user: updatedUser } =
           await response.json();
-        // console.log("got leaderboard", leaderboard, updatedUser);
+        console.log("got leaderboard", leaderboard, updatedUser);
         setLeaderboard(newLeaderboard);
         setUserInfo(updatedUser);
         if (updatedUser && efrogrUser)
@@ -195,13 +197,16 @@ export default function Page({
 
   const lives = BigInt(efrogrUser?.croakLeft || "0") / CROAK_PER_PLAY;
 
+  const isPlayingJackpot = menuState == EMenuState.PLAYING_JACKPOT;
+
   const needsCredits =
     !!efrogrUser &&
-    Number(efrogrUser.croakLeft) >= 0 &&
+    isPlayingJackpot &&
     Number(efrogrUser.croakLeft) < CROAK_PER_PLAY;
 
   // open modal if no croak left, croak balance is below 100 and eth balance is 0
   const doesNeedCroak =
+    isPlayingJackpot &&
     !isCroakBalanceLoading &&
     croakBalance &&
     croakBalance?.value < CROAK_BUNDLE;
@@ -212,10 +217,7 @@ export default function Page({
   const doesNeedDeposit = (doesNeedCroak || doesNeedEth) && needsCredits;
 
   const doesNeedCredits =
-    !!efrogrUser &&
-    lives <= 0 &&
-    !doesNeedDeposit &&
-    Number(efrogrUser.croakLeft) > -1;
+    !!efrogrUser && isPlayingJackpot && lives <= 0 && !doesNeedDeposit;
 
   const gamePlay = (
     <>
@@ -263,6 +265,17 @@ export default function Page({
     </>
   );
 
+  // if free play then start game
+  // if jackpot play then check if user has enough croak to play
+  // if not, then show modal to buy or deposit
+  // if user has enough croak
+  // const startGame = (mode: EMenuState) => {
+  //   if (mode === EMenuState.PLAYING_JACKPOT) {
+  //   } else {
+  //     setMenuState(mode);
+  //   }
+  // };
+
   const modeSelector = (
     <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
       <div>
@@ -303,6 +316,10 @@ export default function Page({
     </div>
   );
 
+  const showGame =
+    (isPlayingJackpot || menuState === EMenuState.PLAYING_FREE) &&
+    !doesNeedDeposit &&
+    !doesNeedCredits;
   return (
     <>
       <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
@@ -311,7 +328,7 @@ export default function Page({
       </main>
       <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
         <GameBanner />
-        {menuState === EMenuState.NOT_PLAYING ? modeSelector : gamePlay}
+        {showGame ? gamePlay : modeSelector}
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
@@ -347,7 +364,7 @@ export default function Page({
         croak={croakBalance?.value || BigInt(0)}
       />
       <BuyCreditsSheet
-        open={doesNeedCredits}
+        open={!!doesNeedCredits}
         efrogrUserId={efrogrUser?.id || ""}
         setEfrogrUser={setEfrogrUser}
       />

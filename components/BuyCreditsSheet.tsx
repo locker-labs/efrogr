@@ -10,7 +10,13 @@ import { Loader2 } from "lucide-react";
 import { encodeFunctionData } from "viem";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { isEthereumWallet } from "@dynamic-labs/ethereum";
-import { CROAK_ADDRESS, CROAK_BUNDLE, LOCKER_TREASURY } from "@/lib/constants";
+import {
+  CROAK_ADDRESS,
+  CROAK_BUNDLE,
+  CROAK_BUNDLE_FORMATTED,
+  CROAK_PER_PLAY_FORMATTED,
+  LOCKER_TREASURY,
+} from "@/lib/constants";
 
 export function BuyCreditsSheet({
   open,
@@ -32,6 +38,7 @@ export function BuyCreditsSheet({
   useEffect(() => {
     if (Boolean(txnHash)) {
       const processPayment = async () => {
+        console.log("Processing payment with txnHash", txnHash, efrogrUserId);
         const response = await fetch("api/processPayment", {
           method: "POST",
           headers: {
@@ -61,7 +68,6 @@ export function BuyCreditsSheet({
   const handleBuyNow = async () => {
     setIsLoading(true);
     try {
-      const publicClient = await primaryWallet.getPublicClient();
       const walletClient = await primaryWallet.getWalletClient();
 
       // Prepare ERC20 transfer data
@@ -92,11 +98,10 @@ export function BuyCreditsSheet({
       setTxnHash(hash);
 
       // Wait for transaction receipt
-      const receipt = await publicClient.getTransactionReceipt({ hash });
-      console.log(receipt);
+      // const receipt = await publicClient.getTransactionReceipt({ hash });
+      // console.log(receipt);
     } catch (error) {
       console.error("Transaction failed:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -107,34 +112,45 @@ export function BuyCreditsSheet({
         <SheetHeader>
           <SheetTitle>Buy credits to play</SheetTitle>
           <SheetDescription className="text-sm">
-            Qualify for the jackpot and save every time you play.
+            It&apos;s good for you and good for Efrogs.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col items-center text-center my-16 space-y-4">
-          <button
-            className={`bg-locker-500 text-white px-8 py-4 text-lg font-bold rounded-md ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={handleBuyNow}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="animate-spin h-5 w-5" />
-                <span>Processing...</span>
-              </div>
-            ) : (
-              "Buy now"
-            )}
-          </button>
-          <p className="text-xs text-muted-foreground">
-            10 lives for 1,000 CROAK
-          </p>
-          {txnHash && (
-            <p className="text-xs text-green-500 break-all">
-              Transaction Hash: {txnHash}
+
+        <div className="flex justify-between flex-col">
+          <div className="flex flex-col items-center text-center my-16 space-y-2">
+            <button
+              className={`bg-locker-500 text-white px-8 py-4 text-lg font-bold rounded-md w-full ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={handleBuyNow}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin h-5 w-5" />
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                "Buy now"
+              )}
+            </button>
+            <p className="text-xs text-muted-foreground">
+              {Math.floor(CROAK_BUNDLE_FORMATTED / CROAK_PER_PLAY_FORMATTED)}{" "}
+              lives for {CROAK_BUNDLE_FORMATTED.toLocaleString()} CROAK
             </p>
-          )}
+          </div>
+
+          <div>
+            <p className="text-locker-500 font-semibold">
+              Game fees go towards
+            </p>
+            <ul className="list-inside list-disc text-sm  text-left">
+              <li>Jackpot distributed to random daily player</li>
+              <li>Lockup and save CROAK for 3 months</li>
+              <li>Contribution to Efrogs treasury</li>
+              <li>Learn more</li>
+            </ul>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

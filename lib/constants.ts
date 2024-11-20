@@ -45,7 +45,8 @@ export const TABLES = {
 };
 
 export const CROAK_PER_PLAY_FORMATTED = 300;
-export const CROAK_BUNDLE = BigInt(1000 * 10 ** 18);
+export const CROAK_BUNDLE_FORMATTED = 1000;
+export const CROAK_BUNDLE = BigInt(CROAK_BUNDLE_FORMATTED * 10 ** 18);
 export const CROAK_PER_PLAY = BigInt(CROAK_PER_PLAY_FORMATTED * 10 ** 18);
 export const MIN_CROAK_DEPOSIT = BigInt(1000 * 10 ** 18);
 export const MIN_ETH_DEPOSIT = BigInt(0.00001 * 10 ** 18);
