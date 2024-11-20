@@ -19,6 +19,7 @@ import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
+  SpinnerIcon,
 } from "@/lib/dynamic";
 import { useAccount, useBalance } from "wagmi";
 
@@ -325,11 +326,13 @@ export default function Page({
     !doesNeedCredits;
 
   const game = showGame ? gamePlay : modeSelector;
-  const gameSection = !!efrogrUser ? (
-    game
-  ) : (
-    <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
-  );
+  let gameSection = <Spinner />;
+  if (!!efrogrUser) gameSection = game;
+  else if (!user)
+    gameSection = (
+      <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
+    );
+
   return (
     <>
       <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
@@ -376,7 +379,7 @@ export default function Page({
       />
       <BuyCreditsSheet
         open={!!doesNeedCredits}
-        efrogrUserId={efrogrUser?.id || ""}
+        efrogrUser={efrogrUser}
         setEfrogrUser={setEfrogrUser}
         onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
       />

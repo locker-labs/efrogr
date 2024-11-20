@@ -8,9 +8,9 @@ export type ILeaderboardProps = {
 
 export async function POST(request: Request) {
   const params = (await request.json()) as ILeaderboardProps;
-  console.log("leardeboard POST", params);
+  // console.log("leardeboard POST", params);
   const { efrogrUserId } = params;
-  console.log("efrogrUserId POST", efrogrUserId);
+  // console.log("efrogrUserId POST", efrogrUserId);
 
   // return existing user if exists
   let user = null;
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       .select("*")
       .eq("id", efrogrUserId);
 
-    console.log("users", users);
+    // console.log("users", users);
 
     if (!usersError && users && users.length > 0) {
       user = users[0];
@@ -37,6 +37,6 @@ export async function POST(request: Request) {
     throw new Error("User not found");
   }
 
-  console.log("leaderboard", leaderboard, user);
+  // console.log("leaderboard", leaderboard, user);
   return NextResponse.json({ leaderboard, user }, { status: 200 });
 }

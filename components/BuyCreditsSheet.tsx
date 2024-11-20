@@ -17,15 +17,16 @@ import {
   CROAK_PER_PLAY_FORMATTED,
   LOCKER_TREASURY,
 } from "@/lib/constants";
+import { IEfrogrUser } from "@/lib/types";
 
 export function BuyCreditsSheet({
   open,
-  efrogrUserId,
+  efrogrUser,
   setEfrogrUser,
   onDismiss,
 }: {
   open: boolean;
-  efrogrUserId: string;
+  efrogrUser: IEfrogrUser | undefined;
   // @typescript-eslint/no-explicit-any
   setEfrogrUser: any;
   onDismiss: () => void;
@@ -40,14 +41,14 @@ export function BuyCreditsSheet({
   useEffect(() => {
     if (Boolean(txnHash)) {
       const processPayment = async () => {
-        console.log("Processing payment with txnHash", txnHash, efrogrUserId);
+        console.log("Processing payment with txnHash", txnHash, efrogrUser);
         const response = await fetch("api/processPayment", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            efrogrUserId,
+            efrogrUser,
             txnHash,
           }),
         }).catch((error) => {
