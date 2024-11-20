@@ -26,7 +26,7 @@ export function BuyCreditsSheet({
   onDismiss,
 }: {
   open: boolean;
-  efrogrUser: IEfrogrUser | undefined;
+  efrogrUser: IEfrogrUser | null;
   // @typescript-eslint/no-explicit-any
   setEfrogrUser: any;
   onDismiss: () => void;
