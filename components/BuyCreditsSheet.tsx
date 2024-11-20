@@ -22,11 +22,13 @@ export function BuyCreditsSheet({
   open,
   efrogrUserId,
   setEfrogrUser,
+  onDismiss,
 }: {
   open: boolean;
   efrogrUserId: string;
   // @typescript-eslint/no-explicit-any
   setEfrogrUser: any;
+  onDismiss: () => void;
 }) {
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -107,7 +109,7 @@ export function BuyCreditsSheet({
   };
 
   return (
-    <Sheet open={isSheetOpen}>
+    <Sheet open={isSheetOpen} onOpenChange={(isOpen) => !isOpen && onDismiss()}>
       <SheetContent className="no-close">
         <SheetHeader>
           <SheetTitle>Buy credits to play</SheetTitle>

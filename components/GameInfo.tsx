@@ -1,5 +1,12 @@
 import { IEfrogrUser, ILeaderboard } from "@/lib/types";
 
+function cleanUsername(username: string | undefined) {
+  if (!username) return "Loading...";
+  else if (username.length === 42)
+    return `${username.slice(0, 4)}...${username.slice(-4)}`;
+  else return `@${username}`;
+}
+
 export default function GameInfo({
   efrogrUser,
   leaderboard,
@@ -14,7 +21,7 @@ export default function GameInfo({
     .map((ranking, index) => {
       return (
         <p key={index}>
-          {index + 1}. @{ranking.tgUsername} ({ranking.highScore})
+          {index + 1}. {cleanUsername(ranking.tgUsername)} ({ranking.highScore})
         </p>
       );
     });
@@ -27,13 +34,9 @@ export default function GameInfo({
       </>
     ) : null;
 
-  let username = efrogrUser?.tgJson?.username;
+  const username = cleanUsername(efrogrUser?.tgJson?.username);
 
   // trim ethereum addresses
-  if (!username) username = "Loading...";
-  else if (username.length === 42)
-    username = `${username.slice(0, 4)}...${username.slice(-4)}`;
-  else username = `@${username}`;
 
   return (
     <div className="flex flex-col w-full text-sm mt-5">

@@ -135,7 +135,7 @@ function startingScreen(p5: any) {
 }
 
 function trackPlayed(p5) {
-  if (score !== 0) {
+  if (menuState === EMenuState.PLAYING_JACKPOT) {
     console.log("trackPlayed", efrogrUser, score);
     const path = "api/trackPlayed";
     const data = {

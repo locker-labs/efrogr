@@ -46,10 +46,10 @@ export const TABLES = {
 
 export const CROAK_PER_PLAY_FORMATTED = 300;
 export const CROAK_BUNDLE_FORMATTED = 1000;
+export const MIN_ETH_DEPOSIT_FORMATTED = 0.00001;
 export const CROAK_BUNDLE = BigInt(CROAK_BUNDLE_FORMATTED * 10 ** 18);
 export const CROAK_PER_PLAY = BigInt(CROAK_PER_PLAY_FORMATTED * 10 ** 18);
-export const MIN_CROAK_DEPOSIT = BigInt(1000 * 10 ** 18);
-export const MIN_ETH_DEPOSIT = BigInt(0.00001 * 10 ** 18);
+export const MIN_ETH_DEPOSIT = BigInt(MIN_ETH_DEPOSIT_FORMATTED * 10 ** 18);
 
 export const CROAK_ADDRESS = "0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF";
 export const LOCKER_TREASURY = "0x119677b2a0f782cbd78f322f9b8ba6a3adf3c299";

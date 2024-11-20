@@ -90,7 +90,10 @@ export default function Page({
   // create user record if it doesn't exist
   useEffect(() => {
     // console.log("Efrogr User", telegramAuthToken, user);
-    if (!user) return;
+    if (!user) {
+      if (!!efrogrUser) setEfrogrUser(null);
+      return;
+    }
     // if (!telegramAuthToken) return;
     const createUser = async () => {
       const response = await fetch("api/createUser", {
@@ -320,6 +323,13 @@ export default function Page({
     (isPlayingJackpot || menuState === EMenuState.PLAYING_FREE) &&
     !doesNeedDeposit &&
     !doesNeedCredits;
+
+  const game = showGame ? gamePlay : modeSelector;
+  const gameSection = !!efrogrUser ? (
+    game
+  ) : (
+    <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
+  );
   return (
     <>
       <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
@@ -328,7 +338,7 @@ export default function Page({
       </main>
       <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
         <GameBanner />
-        {showGame ? gamePlay : modeSelector}
+        {gameSection}
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
@@ -359,6 +369,7 @@ export default function Page({
       </footer>
       <DepositSheet
         open={!!doesNeedDeposit}
+        onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
         depositAddress={address || "Loading..."}
         eth={ethBalance?.value || BigInt(0)}
         croak={croakBalance?.value || BigInt(0)}
@@ -367,6 +378,7 @@ export default function Page({
         open={!!doesNeedCredits}
         efrogrUserId={efrogrUser?.id || ""}
         setEfrogrUser={setEfrogrUser}
+        onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
       />
     </>
   );
