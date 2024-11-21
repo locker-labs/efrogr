@@ -36,6 +36,15 @@ import { formatUnits } from "viem";
 import Image from "next/image";
 import xIcon from "@/public/x.svg";
 import tgIcon from "@/public/telegram.svg";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(duration);
+
 export default function Page({
   searchParams,
 }: {
@@ -59,6 +68,7 @@ export default function Page({
     EMenuState.NOT_PLAYING
   );
   const [lastResult, setLastResult] = useState<IGameResult | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("Calculating...");
 
   // When game ends
   const onGameEnd = useCallback((result: IGameResult) => {
@@ -162,6 +172,32 @@ export default function Page({
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, [efrogrUser]);
+
+  // Countdown to next raffle
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = dayjs().tz("America/Chicago");
+      let next7PM = dayjs().tz("America/Chicago").hour(19).minute(0).second(0);
+
+      // If it's past 7 PM, set to the next day's 7 PM
+      if (now.isAfter(next7PM)) {
+        next7PM = next7PM.add(1, "day");
+      }
+
+      const diff = dayjs.duration(next7PM.diff(now));
+      const hours = diff.hours();
+      const minutes = diff.minutes();
+      const seconds = diff.seconds();
+
+      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    // Update countdown every second
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, []);
 
   // if croakLeft = -1, then the user has not played the game yet
   // let them play once for free
@@ -295,7 +331,7 @@ export default function Page({
             : "OUT OF TIME"}
         </p>
         <p className="mt-3">
-          {menuState === EMenuState.PLAYING_JACKPOT
+          {lastResult?.menuState === EMenuState.PLAYING_JACKPOT
             ? "you scored"
             : "free plays don't count"}
         </p>
@@ -332,6 +368,9 @@ export default function Page({
             : `${BigInt(
                 formatUnits(jackpotBalance?.value || BigInt(0), 18)
               ).toLocaleString()} CROAK JACKPOT`}
+        </p>
+        <p className="text-gray-700 text-center mt-2">
+          next winner in {timeLeft}
         </p>
       </div>
 

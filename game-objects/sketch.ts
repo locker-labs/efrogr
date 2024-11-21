@@ -91,7 +91,7 @@ function gameOver(p5) {
   gameState = EGameState.START_SCREEN;
   console.log("Game Over");
   trackPlayed(p5);
-  onGameEnd({ score, reason: EGameState.GAME_OVER });
+  onGameEnd({ score, reason: EGameState.GAME_OVER, menuState });
 
   //show a game over screen with high score and stuff
   level = 1;
@@ -475,7 +475,7 @@ const sketch: Sketch = (p5) => {
       if (countdown < 0) {
         gameIsActive = false;
         gameState = EGameState.START_SCREEN;
-        onGameEnd({ score, reason: EGameState.OUT_OF_TIME });
+        onGameEnd({ score, reason: EGameState.OUT_OF_TIME, menuState });
         trackPlayed(p5);
         level = 1;
         resetGame(p5);

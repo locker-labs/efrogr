@@ -43,7 +43,8 @@ export function DepositSheet({
         <SheetHeader>
           <SheetTitle>Deposit to continue</SheetTitle>
           <SheetDescription className="text-sm">
-            Your wallet. Your funds. Withdraw anytime.
+            A new wallet was created for you using your Telegram details. Your
+            address is below. Withdraw funds or export private key at any time.
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col break-all space-y-3 text-center my-16">

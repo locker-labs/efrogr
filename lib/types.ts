@@ -1,4 +1,4 @@
-import { EGameState } from "./constants";
+import { EGameState, EMenuState } from "./constants";
 
 export type IEfrogrTgJson = {
   authDate: number;
@@ -37,4 +37,5 @@ export type ILeaderboard = {
 export type IGameResult = {
   score: number;
   reason: EGameState;
+  menuState: EMenuState;
 };

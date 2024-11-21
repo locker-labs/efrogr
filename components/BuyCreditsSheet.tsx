@@ -151,7 +151,6 @@ export function BuyCreditsSheet({
               <li>Jackpot distributed to random daily player</li>
               <li>Lockup and save CROAK for 3 months</li>
               <li>Contribution to Efrogs treasury</li>
-              <li>Learn more</li>
             </ul>
           </div>
         </div>
