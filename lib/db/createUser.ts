@@ -34,6 +34,7 @@ export default async function createEfrogrUser({
     .select("*")
     .eq("dynamicUserId", dynamicUserId);
 
+  console.log("Existing user", users, usersError);
   if (!usersError && users && users.length > 0) {
     return users[0] as IEfrogrUser;
   }
