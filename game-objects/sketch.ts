@@ -4,7 +4,6 @@ import {
   canvasWidth,
   grid,
   EGameState,
-  KEYCODE_SPACE,
   EUserDirection,
   GAME_HOME_TITLE,
   GAME_HOME_SUBTITLE,
@@ -16,6 +15,7 @@ import Car from "@/game-objects/car.js";
 import Log from "@/game-objects/log.js";
 import Scenery from "@/game-objects/scenery.js";
 import { IEfrogrUser } from "@/lib/types";
+import cleanUsername from "@/lib/cleanUsername";
 
 //VARIABLES
 // class variables
@@ -34,6 +34,9 @@ let countdown = COUNTDOWN_START;
 let score = 0;
 let level = 1;
 let gameIsActive = true;
+let highScore = 0;
+let highScoreUsername = "";
+let lives = BigInt(1);
 
 //row objects
 const row1 = {
@@ -88,7 +91,8 @@ function gameOver(p5) {
   gameState = EGameState.START_SCREEN;
   console.log("Game Over");
   trackPlayed(p5);
-  onGameEnd(score, EGameState.GAME_OVER);
+  onGameEnd({ score, reason: EGameState.GAME_OVER });
+
   //show a game over screen with high score and stuff
   level = 1;
   resetGame(p5);
@@ -321,11 +325,17 @@ const sketch: Sketch = (p5) => {
       userDirection,
       onGameEnd: _onGameEnd,
       menuState: _menuState,
+      highScore: _highScore,
+      highScoreUsername: _highScoreUsername,
+      lives: _lives,
     } = props;
     const { direction } = userDirection;
     onGameEnd = _onGameEnd;
     efrogrUser = user;
     menuState = _menuState;
+    highScore = _highScore;
+    highScoreUsername = _highScoreUsername;
+    lives = _lives;
 
     if (direction) {
       // Game will initially be loaded with none direction, don't try to move frog
@@ -413,17 +423,48 @@ const sketch: Sketch = (p5) => {
 
       //text
       p5.push();
-      p5.fill("#FFF");
+      p5.textAlign(p5.CENTER, p5.CENTER);
       // textFont(pixelFont);
-      p5.textSize(24);
-      const statHeight = 25;
-      const statPadding = 30;
+
+      const white = "#FFF";
+      const locker = "#6269DF";
+      const statHeight = 20;
+      const statPadding = 50;
+      const lineHeight = 20;
+
+      const md = 16;
+      const lg = 30;
+
+      // left side
+      p5.textSize(md);
+      p5.fill(white);
+      const livesText =
+        menuState === EMenuState.PLAYING_FREE ? "FREE" : "LIVES:  " + lives;
+      p5.text(livesText, statPadding, statHeight);
+      p5.text(score, statPadding, statHeight + lineHeight);
+
+      // middle
+      p5.textSize(lg);
+      p5.fill(locker);
       p5.text(
-        "time: " + Math.round(countdown / 36) + "s",
-        canvasWidth - 85 - statPadding,
+        Math.round(countdown / 36) + "s",
+        Math.round(canvasWidth / 2) - 20,
         statHeight
       );
-      p5.text("score: " + score, statPadding, statHeight);
+
+      // right
+      p5.textSize(md);
+      p5.fill(white);
+      p5.text(
+        cleanUsername(highScoreUsername),
+        canvasWidth - 1.5 * statPadding,
+        statHeight
+      );
+      p5.text(
+        highScore,
+        canvasWidth - 1.5 * statPadding,
+        statHeight + lineHeight
+      );
       p5.pop();
 
       //game mechanics
@@ -434,7 +475,7 @@ const sketch: Sketch = (p5) => {
       if (countdown < 0) {
         gameIsActive = false;
         gameState = EGameState.START_SCREEN;
-        onGameEnd(score, EGameState.OUT_OF_TIME);
+        onGameEnd({ score, reason: EGameState.OUT_OF_TIME });
         trackPlayed(p5);
         level = 1;
         resetGame(p5);

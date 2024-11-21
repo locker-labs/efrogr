@@ -1,3 +1,5 @@
+import { EGameState } from "./constants";
+
 export type IEfrogrTgJson = {
   authDate: number;
   firstName: string;
@@ -30,4 +32,9 @@ export type ILeaderboard = {
   croakUsed: number;
   croakLeft: number;
   tgUsername: string;
+};
+
+export type IGameResult = {
+  score: number;
+  reason: EGameState;
 };

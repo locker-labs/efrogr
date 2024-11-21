@@ -27,13 +27,15 @@ import Spinner from "@/components/Spinner";
 import Link from "next/link";
 import GameInfo from "@/components/GameInfo";
 import GameBanner from "@/components/GameBanner";
-import { IEfrogrUser, ILeaderboard } from "@/lib/types";
+import { IEfrogrUser, IGameResult, ILeaderboard } from "@/lib/types";
 import { linea } from "viem/chains";
 import { DepositSheet } from "@/components/DepositSheet";
 import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 import sketch from "@/game-objects/sketch";
 import { formatUnits } from "viem";
-
+import Image from "next/image";
+import xIcon from "@/public/x.svg";
+import tgIcon from "@/public/telegram.svg";
 export default function Page({
   searchParams,
 }: {
@@ -56,15 +58,17 @@ export default function Page({
   const [menuState, setMenuState] = useState<EMenuState>(
     EMenuState.NOT_PLAYING
   );
+  const [lastResult, setLastResult] = useState<IGameResult | null>(null);
 
   // When game ends
-  const onGameEnd = useCallback((score: number, gameState: EGameState) => {
-    console.log("Game ended with score", score, gameState);
+  const onGameEnd = useCallback((result: IGameResult) => {
+    console.log("Game ended with result", result);
+    setLastResult(result);
     setUserDirection({
       direction: EUserDirection.NONE,
       key: Date.now(), // Use the current timestamp as a unique key
     });
-    setMenuState(EMenuState.NOT_PLAYING);
+    setMenuState(EMenuState.GAME_OVER);
   }, []);
 
   const telegramAuthToken = searchParams.telegramAuthToken as string;
@@ -235,6 +239,9 @@ export default function Page({
             onGameEnd={onGameEnd}
             menuState={menuState}
             efrogrUser={efrogrUser}
+            highScore={leaderboard[0]?.highScore}
+            highScoreUsername={leaderboard[0]?.tgUsername}
+            lives={lives}
           />
         ) : null}
       </div>
@@ -279,6 +286,42 @@ export default function Page({
   //     setMenuState(mode);
   //   }
   // };
+  const gameOver = (
+    <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
+      <div className="text-center">
+        <p className="font-bold  text-lg">
+          {lastResult?.reason === EGameState.GAME_OVER
+            ? "GAME OVER"
+            : "OUT OF TIME"}
+        </p>
+        <p className="mt-3">
+          {menuState === EMenuState.PLAYING_JACKPOT
+            ? "you scored"
+            : "free plays don't count"}
+        </p>
+        <p className="text-4xl font-semibold text-locker-500">
+          {lastResult?.score}
+        </p>
+      </div>
+      <div>
+        <button
+          className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+          onClick={() => setMenuState(EMenuState.NOT_PLAYING)}
+        >
+          <div className="flex flex-col space-y-1">
+            <span className="text-xl">CONTINUE</span>
+          </div>
+        </button>
+      </div>
+
+      <GameInfo
+        efrogrUser={efrogrUser}
+        leaderboard={leaderboard}
+        userInfo={userInfo}
+        lives={lives}
+      />
+    </div>
+  );
 
   const modeSelector = (
     <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
@@ -312,11 +355,17 @@ export default function Page({
         </button>
       </div>
 
-      <GameInfo
-        efrogrUser={efrogrUser}
-        leaderboard={leaderboard}
-        userInfo={userInfo}
-      />
+      <div className="flex flex-col space-y-2">
+        <p className="text-center text-sm text-gray-500">brought to you by</p>
+        <div className="flex justify-center space-x-8">
+          <Link href="https://locker.money">
+            <img src="/locker.png" alt="locker" width={150} />
+          </Link>
+          <span>
+            <img src="/croak.png" alt="Croak" width={150} />
+          </span>
+        </div>
+      </div>
     </div>
   );
 
@@ -333,6 +382,11 @@ export default function Page({
       <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
     );
 
+  if (menuState === EMenuState.GAME_OVER) {
+    gameSection = gameOver;
+  }
+
+  const iconSize = 16;
   return (
     <>
       <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
@@ -345,19 +399,29 @@ export default function Page({
       </div>
 
       <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
-        <div className="w-[350px] flex justify-center flex-col space-y-2">
-          <div className="flex flex-row justify-center space-x-2">
+        <div className="w-[350px] flex justify-center flex-col space-y-3">
+          <div className="flex flex-row justify-center space-x-4">
             <Link
               href="https://twitter.com/locker_money"
               className="footer-text text-center text-sm text-gray-700"
             >
-              X
+              <Image
+                src={xIcon}
+                width={iconSize}
+                height={iconSize}
+                alt="Locker on X"
+              />
             </Link>
             <Link
               href="https://discord.gg/locker"
               className="footer-text text-center text-sm text-gray-700"
             >
-              Telegram
+              <Image
+                src={tgIcon}
+                width={iconSize}
+                height={iconSize}
+                alt="Locker on Telegram"
+              />
             </Link>
           </div>
           <div className="flex flex-row justify-center">
@@ -365,7 +429,7 @@ export default function Page({
               href="https://locker.money"
               className="footer-text text-center text-sm text-gray-700"
             >
-              Made by Locker
+              <img src="/locker-dark.png" width="55px" alt="Locker" />
             </Link>
           </div>
         </div>

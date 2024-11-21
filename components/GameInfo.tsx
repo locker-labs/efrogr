@@ -1,20 +1,16 @@
+import cleanUsername from "@/lib/cleanUsername";
 import { IEfrogrUser, ILeaderboard } from "@/lib/types";
-
-function cleanUsername(username: string | undefined) {
-  if (!username) return "Loading...";
-  else if (username.length === 42)
-    return `${username.slice(0, 4)}...${username.slice(-4)}`;
-  else return `@${username}`;
-}
 
 export default function GameInfo({
   efrogrUser,
   leaderboard,
   userInfo,
+  lives,
 }: {
   efrogrUser: IEfrogrUser | null;
   leaderboard: ILeaderboard[];
   userInfo: ILeaderboard | null;
+  lives: bigint;
 }) {
   const leaderboardList = leaderboard
     .sort((a, b) => b.highScore - a.highScore)
@@ -46,6 +42,7 @@ export default function GameInfo({
           <p className="font-bold">{username}</p>
           {userInfo && (
             <>
+              <p>Lives left: {lives.toString()}</p>
               <p>High score: {userInfo.highScore}</p>
               <p>
                 Saved: {(userInfo.croakUsed / 4 / 10 ** 18).toLocaleString()}{" "}
