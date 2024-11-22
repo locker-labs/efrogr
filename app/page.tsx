@@ -19,7 +19,6 @@ import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
-  SpinnerIcon,
 } from "@/lib/dynamic";
 import { useAccount, useBalance } from "wagmi";
 
@@ -33,13 +32,13 @@ import { DepositSheet } from "@/components/DepositSheet";
 import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 import sketch from "@/game-objects/sketch";
 import { formatUnits } from "viem";
-import Image from "next/image";
-import xIcon from "@/public/x.svg";
-import tgIcon from "@/public/telegram.svg";
+
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import duration from "dayjs/plugin/duration";
+import Footer from "@/components/Footer";
+import Jackpot from "@/components/Jackpot";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -96,13 +95,6 @@ export default function Page({
     query: { refetchInterval: 5000 },
   });
 
-  // console.log("croakBalance", croakBalance);
-  // console.log("ethBalance", ethBalance);
-
-  // console.log("doesNeedCroak", doesNeedCroak);
-  // console.log("doesNeedEth", doesNeedEth);
-  // console.log("doesNeedDeposit", doesNeedDeposit);
-  // create user record if it doesn't exist
   useEffect(() => {
     // console.log("Efrogr User", telegramAuthToken, user);
     if (!user) {
@@ -425,54 +417,18 @@ export default function Page({
     gameSection = gameOver;
   }
 
-  const iconSize = 16;
   return (
     <>
-      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[350px]">
+      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[300px]">
         <img src="./efrogr.png" alt="Efrogr by Locker" className="w-12" />
         {!isLoading && <DynamicWidget />}
       </main>
-      <div className="flex flex-col items-center w-[350px] min-h-[90vh]">
-        <GameBanner />
+      <div className="flex flex-col items-center w-[300px]">
+        <Jackpot />
         {gameSection}
       </div>
 
-      <footer className="py-5 bg-locker-200 w-full mt-5 flex justify-center">
-        <div className="w-[350px] flex justify-center flex-col space-y-3">
-          <div className="flex flex-row justify-center space-x-4">
-            <Link
-              href="https://twitter.com/locker_money"
-              className="footer-text text-center text-sm text-gray-700"
-            >
-              <Image
-                src={xIcon}
-                width={iconSize}
-                height={iconSize}
-                alt="Locker on X"
-              />
-            </Link>
-            <Link
-              href="https://discord.gg/locker"
-              className="footer-text text-center text-sm text-gray-700"
-            >
-              <Image
-                src={tgIcon}
-                width={iconSize}
-                height={iconSize}
-                alt="Locker on Telegram"
-              />
-            </Link>
-          </div>
-          <div className="flex flex-row justify-center">
-            <Link
-              href="https://locker.money"
-              className="footer-text text-center text-sm text-gray-700"
-            >
-              <img src="/locker-dark.png" width="55px" alt="Locker" />
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
       <DepositSheet
         open={!!doesNeedDeposit}
         onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
