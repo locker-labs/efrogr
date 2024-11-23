@@ -1,23 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import DynamicProvider from "@/providers/DynamicProvider";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { Inter } from "next/font/google";
+import { DynamicLoadingProvider } from "@/providers/DynamicLoadingProvider";
 
 export const metadata: Metadata = {
   title: "Efrogr by Locker",
   description: "Get your Efrog across the street. Win and save CROAK.",
 };
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -27,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`flex flex-col ${geistSans.variable} ${geistMono.variable} antialiased items-center`}
+        className={`flex flex-col ${inter.className} antialiased items-center`}
       >
-        <DynamicProvider>{children}</DynamicProvider>
+        <DynamicProvider>
+          <DynamicLoadingProvider>{children}</DynamicLoadingProvider>
+        </DynamicProvider>
       </body>
     </html>
   );

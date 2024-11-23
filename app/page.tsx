@@ -31,28 +31,20 @@ import { linea } from "viem/chains";
 import { DepositSheet } from "@/components/DepositSheet";
 import { BuyCreditsSheet } from "@/components/BuyCreditsSheet";
 import sketch from "@/game-objects/sketch";
-import { formatUnits } from "viem";
-
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import duration from "dayjs/plugin/duration";
-import Footer from "@/components/Footer";
 import Jackpot from "@/components/Jackpot";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(duration);
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { useDynamicLoading } from "@/providers/DynamicLoadingProvider";
+import { EfrogrProvider, useEfrogr } from "@/providers/EfrogrProvider";
+import Game from "@/components/Game";
 
 export default function Page({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const { sdkHasLoaded, user } = useDynamicContext();
-  const { telegramSignIn } = useTelegramLogin();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [leaderboard, setLeaderboard] = useState<ILeaderboard[]>([]);
+  const { user } = useDynamicContext();
+
   const [userInfo, setUserInfo] = useState<ILeaderboard | null>(null);
   const { address, isConnected, chain } = useAccount();
   const [userDirection, setUserDirection] = useState<{
@@ -62,12 +54,16 @@ export default function Page({
     direction: EUserDirection.NONE,
     key: 0,
   });
+  // const [efrogrUser, setEfrogrUser] = useState<IEfrogrUser | null>(null);
+  // const { menuState, setMenuState, efrogrUser, leaderboard } = useEfrogr();
   const [efrogrUser, setEfrogrUser] = useState<IEfrogrUser | null>(null);
+  const [leaderboard, setLeaderboard] = useState<ILeaderboard[]>([]);
   const [menuState, setMenuState] = useState<EMenuState>(
     EMenuState.NOT_PLAYING
   );
+
   const [lastResult, setLastResult] = useState<IGameResult | null>(null);
-  const [timeLeft, setTimeLeft] = useState<string>("Calculating...");
+  const { isDynamicLoading } = useDynamicLoading();
 
   // When game ends
   const onGameEnd = useCallback((result: IGameResult) => {
@@ -95,102 +91,6 @@ export default function Page({
     query: { refetchInterval: 5000 },
   });
 
-  useEffect(() => {
-    // console.log("Efrogr User", telegramAuthToken, user);
-    if (!user) {
-      if (!!efrogrUser) setEfrogrUser(null);
-      return;
-    }
-    // if (!telegramAuthToken) return;
-    const createUser = async () => {
-      const response = await fetch("api/createUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dynamicUserId: user.userId,
-          address: user.verifiedCredentials[0].address,
-          telegramAuthToken,
-        }),
-      }).catch((error) => {
-        console.error("Could not createUser:", error);
-      });
-      if (response) {
-        const { efrogrUser: _efrogrUser } = await response.json();
-        console.log("Got response from user!", _efrogrUser);
-        setEfrogrUser(_efrogrUser);
-      }
-    };
-
-    createUser();
-  }, [user]);
-
-  // Refresh leaderboard
-  useEffect(() => {
-    console.log("efrogrUserUpdated", efrogrUser);
-    const getLeaderboard = async () => {
-      console.log("fetching leaderboard", efrogrUser);
-      const response = await fetch("api/getLeaderboard", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          efrogrUserId: efrogrUser?.id,
-        }),
-      }).catch((error) => {
-        console.error("Could not update leaderboard:", error);
-      });
-      if (response) {
-        const { leaderboard: newLeaderboard, user: updatedUser } =
-          await response.json();
-        console.log("got leaderboard", leaderboard, updatedUser);
-        setLeaderboard(newLeaderboard);
-        setUserInfo(updatedUser);
-        if (updatedUser && efrogrUser)
-          if (
-            updatedUser.croakLeft.toString() !== efrogrUser.croakLeft.toString()
-          )
-            setEfrogrUser({
-              ...efrogrUser,
-              croakLeft: updatedUser.croakLeft.toString(),
-            });
-      }
-    };
-
-    getLeaderboard(); // Fetch immediately
-    const intervalId = setInterval(getLeaderboard, 5000); // Fetch every 5 seconds
-
-    return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, [efrogrUser]);
-
-  // Countdown to next raffle
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = dayjs().tz("America/Chicago");
-      let next7PM = dayjs().tz("America/Chicago").hour(19).minute(0).second(0);
-
-      // If it's past 7 PM, set to the next day's 7 PM
-      if (now.isAfter(next7PM)) {
-        next7PM = next7PM.add(1, "day");
-      }
-
-      const diff = dayjs.duration(next7PM.diff(now));
-      const hours = diff.hours();
-      const minutes = diff.minutes();
-      const seconds = diff.seconds();
-
-      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
-    };
-
-    // Update countdown every second
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
-
-    return () => clearInterval(timer); // Cleanup on unmount
-  }, []);
-
   // if croakLeft = -1, then the user has not played the game yet
   // let them play once for free
   // record efrogr_played with croakUsed = 0 and upgrade croakLeft to 0
@@ -203,27 +103,6 @@ export default function Page({
   // if there's balance, then display modal to buy 10 games for 1,000 croak by sending to Locker treasury
 
   // when game ends, create new efrogr_played record with croakUsed = 100
-  useEffect(() => {
-    console.log("sdkHasLoaded", sdkHasLoaded);
-    if (!sdkHasLoaded) return;
-
-    const signIn = async () => {
-      if (!user) {
-        await telegramSignIn({ forceCreateUser: true });
-      }
-      setIsLoading(false);
-    };
-
-    signIn();
-  }, [sdkHasLoaded]);
-
-  const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
-    address: JACKPOT_ADDRESS,
-    token: CROAK_ADDRESS,
-    chainId: linea.id,
-    query: { refetchInterval: 60_000 },
-  });
-
   const handleDirectionChange = (direction: EUserDirection) => {
     setUserDirection({
       direction,
@@ -258,7 +137,7 @@ export default function Page({
   const gamePlay = (
     <>
       <div>
-        {isLoading ? (
+        {isDynamicLoading ? (
           <Spinner />
         ) : isConnected ? (
           <NextReactP5Wrapper
@@ -304,144 +183,118 @@ export default function Page({
     </>
   );
 
-  // if free play then start game
-  // if jackpot play then check if user has enough croak to play
-  // if not, then show modal to buy or deposit
-  // if user has enough croak
-  // const startGame = (mode: EMenuState) => {
-  //   if (mode === EMenuState.PLAYING_JACKPOT) {
-  //   } else {
-  //     setMenuState(mode);
-  //   }
-  // };
-  const gameOver = (
-    <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
-      <div className="text-center">
-        <p className="font-bold  text-lg">
-          {lastResult?.reason === EGameState.GAME_OVER
-            ? "GAME OVER"
-            : "OUT OF TIME"}
-        </p>
-        <p className="mt-3">
-          {lastResult?.menuState === EMenuState.PLAYING_JACKPOT
-            ? "you scored"
-            : "free plays don't count"}
-        </p>
-        <p className="text-4xl font-semibold text-locker-500">
-          {lastResult?.score}
-        </p>
-      </div>
-      <div>
-        <button
-          className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
-          onClick={() => setMenuState(EMenuState.NOT_PLAYING)}
-        >
-          <div className="flex flex-col space-y-1">
-            <span className="text-xl">CONTINUE</span>
-          </div>
-        </button>
-      </div>
+  // const gameOver = (
+  //   <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
+  //     <div className="text-center">
+  //       <p className="font-bold  text-lg">
+  //         {lastResult?.reason === EGameState.GAME_OVER
+  //           ? "GAME OVER"
+  //           : "OUT OF TIME"}
+  //       </p>
+  //       <p className="mt-3">
+  //         {lastResult?.menuState === EMenuState.PLAYING_JACKPOT
+  //           ? "you scored"
+  //           : "free plays don't count"}
+  //       </p>
+  //       <p className="text-4xl font-semibold text-locker-500">
+  //         {lastResult?.score}
+  //       </p>
+  //     </div>
+  //     <div>
+  //       <button
+  //         className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+  //         onClick={() => setMenuState(EMenuState.NOT_PLAYING)}
+  //       >
+  //         <div className="flex flex-col space-y-1">
+  //           <span className="text-xl">CONTINUE</span>
+  //         </div>
+  //       </button>
+  //     </div>
 
-      <GameInfo
-        efrogrUser={efrogrUser}
-        leaderboard={leaderboard}
-        userInfo={userInfo}
-        lives={lives}
-      />
-    </div>
-  );
+  //     <GameInfo
+  //       efrogrUser={efrogrUser}
+  //       leaderboard={leaderboard}
+  //       userInfo={userInfo}
+  //       lives={lives}
+  //     />
+  //   </div>
+  // );
 
-  const modeSelector = (
-    <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
-      <div>
-        <p className="text-locker-500 text-xl text-center font-semibold">
-          {isJackpotLoading
-            ? null
-            : `${BigInt(
-                formatUnits(jackpotBalance?.value || BigInt(0), 18)
-              ).toLocaleString()} CROAK JACKPOT`}
-        </p>
-        <p className="text-gray-700 text-center mt-2">
-          next winner in {timeLeft}
-        </p>
-      </div>
+  // const modeSelector = (
+  //   <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
+  //     <div>
+  //       <button
+  //         className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
+  //         onClick={() => setMenuState(EMenuState.PLAYING_JACKPOT)}
+  //       >
+  //         <div className="flex flex-col space-y-1">
+  //           <span className="text-lg">Play to win</span>
+  //           <span className="text-xs">
+  //             {CROAK_PER_PLAY_FORMATTED} CROAK per play
+  //           </span>
+  //         </div>
+  //       </button>
+  //       <button
+  //         className="rounded-md text-gray-500  px-4 py-4 w-full"
+  //         onClick={() => setMenuState(EMenuState.PLAYING_FREE)}
+  //       >
+  //         Free play
+  //       </button>
+  //     </div>
 
-      <div>
-        <button
-          className="rounded-md bg-locker-500 text-white px-4 py-4 w-full"
-          onClick={() => setMenuState(EMenuState.PLAYING_JACKPOT)}
-        >
-          <div className="flex flex-col space-y-1">
-            <span className="text-lg">Play to win</span>
-            <span className="text-xs">
-              {CROAK_PER_PLAY_FORMATTED} CROAK per play
-            </span>
-          </div>
-        </button>
-        <button
-          className="rounded-md text-gray-500  px-4 py-4 w-full"
-          onClick={() => setMenuState(EMenuState.PLAYING_FREE)}
-        >
-          Free play
-        </button>
-      </div>
+  //     <div className="flex flex-col space-y-2">
+  //       <p className="text-center text-sm text-gray-500">brought to you by</p>
+  //       <div className="flex justify-center space-x-8">
+  //         <Link href="https://locker.money">
+  //           <img src="/locker.png" alt="locker" width={150} />
+  //         </Link>
+  //         <span>
+  //           <img src="/croak.png" alt="Croak" width={150} />
+  //         </span>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
-      <div className="flex flex-col space-y-2">
-        <p className="text-center text-sm text-gray-500">brought to you by</p>
-        <div className="flex justify-center space-x-8">
-          <Link href="https://locker.money">
-            <img src="/locker.png" alt="locker" width={150} />
-          </Link>
-          <span>
-            <img src="/croak.png" alt="Croak" width={150} />
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+  // const showGame =
+  //   (isPlayingJackpot || menuState === EMenuState.PLAYING_FREE) &&
+  //   !doesNeedDeposit &&
+  //   !doesNeedCredits;
 
-  const showGame =
-    (isPlayingJackpot || menuState === EMenuState.PLAYING_FREE) &&
-    !doesNeedDeposit &&
-    !doesNeedCredits;
+  // const game = showGame ? gamePlay : modeSelector;
+  // let gameSection = <Spinner />;
+  // if (!!efrogrUser) gameSection = game;
+  // else if (!user)
+  //   gameSection = (
+  //     <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
+  //   );
 
-  const game = showGame ? gamePlay : modeSelector;
-  let gameSection = <Spinner />;
-  if (!!efrogrUser) gameSection = game;
-  else if (!user)
-    gameSection = (
-      <p className="mt-4 text-locker-500">Connect your wallet to play.</p>
-    );
-
-  if (menuState === EMenuState.GAME_OVER) {
-    gameSection = gameOver;
-  }
+  // if (menuState === EMenuState.GAME_OVER) {
+  //   gameSection = gameOver;
+  // }
 
   return (
-    <>
-      <main className="py-3 flex flex-row justify-between items-center space-y-3 w-[300px]">
-        <img src="./efrogr.png" alt="Efrogr by Locker" className="w-12" />
-        {!isLoading && <DynamicWidget />}
+    <EfrogrProvider telegramAuthToken={telegramAuthToken}>
+      <main className="flex flex-col items-center w-[300px]">
+        <Header />
+        <Game />
+        {/* {gameSection} */}
       </main>
-      <div className="flex flex-col items-center w-[300px]">
-        <Jackpot />
-        {gameSection}
-      </div>
 
       <Footer />
-      <DepositSheet
+      {/* <DepositSheet
         open={!!doesNeedDeposit}
         onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
         depositAddress={address || "Loading..."}
         eth={ethBalance?.value || BigInt(0)}
         croak={croakBalance?.value || BigInt(0)}
-      />
-      <BuyCreditsSheet
+      /> */}
+      {/* <BuyCreditsSheet
         open={!!doesNeedCredits}
         efrogrUser={efrogrUser}
         setEfrogrUser={setEfrogrUser}
         onDismiss={() => setMenuState(EMenuState.NOT_PLAYING)}
-      />
-    </>
+      /> */}
+    </EfrogrProvider>
   );
 }
