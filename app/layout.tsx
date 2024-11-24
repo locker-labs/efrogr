@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`flex flex-col ${inter.className} antialiased items-center`}
+        className={`flex flex-col ${inter.className} antialiased items-center justify-center w-full`}
       >
         <DynamicProvider>
           <DynamicLoadingProvider>{children}</DynamicLoadingProvider>

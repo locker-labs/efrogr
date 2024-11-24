@@ -6,9 +6,9 @@ export default function Header() {
   const { isDynamicLoading } = useDynamicLoading();
 
   return (
-    <div className="py-3 flex flex-row justify-between items-center space-y-3 w-[300px]">
+    <div className="py-3 flex flex-row justify-between items-center space-y-3 w-full">
       <Image src="/efrogr.png" alt="Efrogr by Locker" width={40} height={40} />
-      <div className="w-2/3 flex flex-row justify-end items-center">
+      <div className="flex flex-row justify-end items-center">
         {!isDynamicLoading && <DynamicWidget />}
       </div>
     </div>

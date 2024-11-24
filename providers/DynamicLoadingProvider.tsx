@@ -8,7 +8,6 @@ import {
 
 interface DynamicLoadingContextProps {
   isDynamicLoading: boolean;
-  setDynamicLoading: (DynamicLoading: boolean) => void;
 }
 
 const DynamicLoadingContext = createContext<
@@ -36,9 +35,7 @@ export const DynamicLoadingProvider: React.FC<{
   }, [sdkHasLoaded, user, telegramSignIn]);
 
   return (
-    <DynamicLoadingContext.Provider
-      value={{ isDynamicLoading, setDynamicLoading: setIsDynamicLoading }}
-    >
+    <DynamicLoadingContext.Provider value={{ isDynamicLoading }}>
       {children}
     </DynamicLoadingContext.Provider>
   );

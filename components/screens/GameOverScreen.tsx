@@ -1,8 +1,15 @@
+import { EGameState, EMenuState } from "@/lib/constants";
+import { useEfrogr } from "@/providers/EfrogrProvider";
 import GameInfo from "../GameInfo";
+import getEfrogrUserLives from "@/lib/getEfrogrUserLives";
+import UserInfo from "../UserInfo";
 
 export default function GameOverScreen() {
+  const { lastResult, setMenuState, userInfo, efrogrUser } = useEfrogr();
+  const lives = getEfrogrUserLives(efrogrUser);
   return (
-    <div className="w-full flex flex-col space-y-2 h-[500px] justify-between border-locker-500 border p-3">
+    <div className="w-full flex flex-col space-y-2 justify-between p-3">
+      <UserInfo />
       <div className="text-center">
         <p className="font-bold  text-lg">
           {lastResult?.reason === EGameState.GAME_OVER
@@ -28,13 +35,6 @@ export default function GameOverScreen() {
           </div>
         </button>
       </div>
-
-      <GameInfo
-        userInfo={userInfo}
-        lives={lives}
-        efrogrUser={null}
-        leaderboard={[]}
-      />
     </div>
   );
 }

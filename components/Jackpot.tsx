@@ -18,7 +18,7 @@ dayjs.extend(timezone);
 dayjs.extend(duration);
 
 export default function Jackpot() {
-  const [timeLeft, setTimeLeft] = useState<string>("Calculating...");
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
     address: JACKPOT_ADDRESS,
     token: CROAK_ADDRESS,
@@ -59,7 +59,7 @@ export default function Jackpot() {
 
   const numEntries = "0 entries";
   return (
-    <div className="flex flex-col w-full bg-gradient-to-b border-2 border-[#831AFE] from-[#831AFE]/15 to-[#07FFFF]/15 rounded-2xl px-3 py-5 mt-4 pb-3">
+    <div className="flex flex-col w-full bg-gradient-to-b border-2 border-[#831AFE] from-[#831AFE]/15 to-[#07FFFF]/15 rounded-2xl px-3 py-5 pb-3">
       <div className="flex flex-row w-full space-x-4">
         <div className="flex flex-col mt-1">
           <Image
@@ -73,7 +73,7 @@ export default function Jackpot() {
           <span className="text-sm text-locker-600 font-semibold">
             Daily Jackpot
           </span>
-          <span className="align-middle justify-center items-center p-1 text-sm space-x-1 text-locker-600 flex flex-row rounded-2xl w-full border-[#FFC053] border-2 bg-[#FFFCB9]">
+          <span className="space-x-1 align-middle justify-center items-center p-1 text-sm text-locker-600 flex flex-row rounded-2xl w-full border-[#FFC053] border-2 bg-[#FFFCB9]">
             <CroakFace />
             <div className="font-extrabold align-middle text-lg">
               {jackpotAmount}
