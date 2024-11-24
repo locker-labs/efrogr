@@ -9,6 +9,7 @@ import { useAccount, useBalance } from "wagmi";
 
 interface EfrogrContextProps {
   efrogrUser: IEfrogrUser | null;
+  setEfrogrUser: React.Dispatch<React.SetStateAction<IEfrogrUser>>;
   leaderboard: ILeaderboard[];
   menuState: EMenuState;
   setMenuState: React.Dispatch<React.SetStateAction<EMenuState>>;
@@ -19,6 +20,10 @@ interface EfrogrContextProps {
   lastResult: IGameResult | null;
   setLastResult: React.Dispatch<React.SetStateAction<IGameResult | null>>;
   userInfo: ILeaderboard | null;
+  ethBalance: any;
+  isEthBalanceLoading: boolean;
+  croakBalance: any;
+  isCroakBalanceLoading: boolean;
 }
 
 const EfrogrContext = createContext<EfrogrContextProps | undefined>(undefined);
@@ -28,14 +33,13 @@ export const EfrogrProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ telegramAuthToken, children }) => {
   const { user: dynamicUser } = useDynamicContext();
-  // const dynamicUser = null;
   const [efrogrUser, setEfrogrUser] = useState<IEfrogrUser | null>(null);
   const [leaderboard, setLeaderboard] = useState<ILeaderboard[]>([]);
   const [menuState, setMenuState] = useState<EMenuState>(
     EMenuState.NOT_PLAYING
   );
   const [userInfo, setUserInfo] = useState<ILeaderboard | null>(null);
-  const { address, isConnected, chain } = useAccount();
+  const { address } = useAccount();
   const { data: croakBalance, isLoading: isCroakBalanceLoading } = useBalance({
     address,
     token: CROAK_ADDRESS,
@@ -142,6 +146,11 @@ export const EfrogrProvider: React.FC<{
         lastResult,
         setLastResult,
         userInfo,
+        ethBalance,
+        isEthBalanceLoading,
+        croakBalance,
+        isCroakBalanceLoading,
+        setEfrogrUser,
       }}
     >
       {children}

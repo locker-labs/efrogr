@@ -15,25 +15,36 @@ import {
   CROAK_BUNDLE,
   CROAK_BUNDLE_FORMATTED,
   CROAK_PER_PLAY_FORMATTED,
+  EMenuState,
   LOCKER_TREASURY,
 } from "@/lib/constants";
-import { IEfrogrUser } from "@/lib/types";
+import { useEfrogr } from "@/providers/EfrogrProvider";
+import { doesEfrogrUserNeedCredits } from "@/lib/payment";
 
-export function BuyCreditsSheet({
-  open,
-  efrogrUser,
-  setEfrogrUser,
-  onDismiss,
-}: {
-  open: boolean;
-  efrogrUser: IEfrogrUser | null;
-  // @typescript-eslint/no-explicit-any
-  setEfrogrUser: any;
-  onDismiss: () => void;
-}) {
+export function BuyCreditsSheet() {
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState(false);
   const [txnHash, setTxnHash] = useState("");
+  const {
+    setMenuState,
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance,
+    setEfrogrUser,
+  } = useEfrogr();
+  const onDismiss = () => setMenuState(EMenuState.NOT_PLAYING);
+
+  const open = doesEfrogrUserNeedCredits(
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance
+  );
 
   // Prevent the sheet from being closed externally if txnHash is defined
   const isSheetOpen = open || Boolean(txnHash);

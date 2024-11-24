@@ -1,3 +1,5 @@
+import { BuyCreditsSheet } from "../BuyCreditsSheet";
+import { DepositSheet } from "../DepositSheet";
 import Jackpot from "../Jackpot";
 import PlayFreeButton from "../PlayFreeButton";
 
@@ -7,6 +9,8 @@ export default function HomeScreen() {
       <Jackpot />
       <span className="text-center text-xxxs text-gray-500">or</span>
       <PlayFreeButton />
+      <DepositSheet />
+      <BuyCreditsSheet />
     </div>
   );
 }

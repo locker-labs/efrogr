@@ -9,24 +9,40 @@ import {
 } from "@/components/ui/sheet";
 import {
   CROAK_BUNDLE_FORMATTED,
+  EMenuState,
   MIN_ETH_DEPOSIT_FORMATTED,
 } from "@/lib/constants";
-import { Loader2, Clipboard, CheckCircle } from "lucide-react";
 import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
+import { useEfrogr } from "@/providers/EfrogrProvider";
+import { doesEfrogrUserNeedDeposit } from "@/lib/payment";
+import { CheckCircle, Loader2, Clipboard } from "lucide-react";
 
-export function DepositSheet({
-  open,
-  onDismiss,
-  depositAddress,
-  eth,
-  croak,
-}: {
-  open: boolean;
-  depositAddress: string;
-  eth: bigint;
-  croak: bigint;
-  onDismiss: () => void;
-}) {
+export function DepositSheet() {
+  const { address } = useAccount();
+  const {
+    setMenuState,
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance,
+  } = useEfrogr();
+  const depositAddress = address || "Loading...";
+
+  const onDismiss = () => setMenuState(EMenuState.NOT_PLAYING);
+  const doesNeedDeposit = doesEfrogrUserNeedDeposit(
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance
+  );
+  const open = !!doesNeedDeposit;
+  const eth = ethBalance?.value || BigInt(0);
+  const croak = croakBalance?.value || BigInt(0);
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyToClipboard = () => {
