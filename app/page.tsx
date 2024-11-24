@@ -21,8 +21,10 @@ export default function Page({
       <main className="flex flex-col items-center justify-center w-[300px]">
         <Header />
         <ScreenSelector />
-        <Footer />
       </main>
+      <footer className="py-5 w-[300px] flex-col space-y-3 flex justify-center mt-8">
+        <Footer />
+      </footer>
     </EfrogrProvider>
   );
 }

@@ -27,8 +27,8 @@ export const EfrogrProvider: React.FC<{
   telegramAuthToken: string;
   children: React.ReactNode;
 }> = ({ telegramAuthToken, children }) => {
-  // const { user: dynamicUser } = useDynamicContext();
-  const dynamicUser = null;
+  const { user: dynamicUser } = useDynamicContext();
+  // const dynamicUser = null;
   const [efrogrUser, setEfrogrUser] = useState<IEfrogrUser | null>(null);
   const [leaderboard, setLeaderboard] = useState<ILeaderboard[]>([]);
   const [menuState, setMenuState] = useState<EMenuState>(
@@ -59,77 +59,76 @@ export const EfrogrProvider: React.FC<{
 
   const [lastResult, setLastResult] = useState<IGameResult | null>(null);
 
-  // useEffect(() => {
-  //   console.log("Efrogr User", telegramAuthToken, user);
-  //   if (!dynamicUser) {
-  //     if (!!efrogrUser) setEfrogrUser(null);
-  //     return;
-  //   }
-  //   // uncommenting this enables checking for tg auth token
-  //   // but it also prevents non tg users from playing
-  //   // if (!telegramAuthToken) return;
-  //   const createUser = async () => {
-  //     const response = await fetch("api/createUser", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         dynamicUserId: dynamicUser.userId,
-  //         address: dynamicUser.verifiedCredentials[0].address,
-  //         telegramAuthToken,
-  //       }),
-  //     }).catch((error) => {
-  //       console.error("Could not createUser:", error);
-  //     });
-  //     if (response) {
-  //       const { efrogrUser: _efrogrUser } = await response.json();
-  //       console.log("Got response from user!", _efrogrUser);
-  //       setEfrogrUser(_efrogrUser);
-  //     }
-  //   };
+  useEffect(() => {
+    console.log("Dynamic User", telegramAuthToken, dynamicUser);
+    if (!dynamicUser) {
+      if (!!efrogrUser) setEfrogrUser(null);
+      return;
+    }
+    // uncommenting this enables checking for tg auth token
+    // but it also prevents non tg users from playing
+    // if (!telegramAuthToken) return;
+    const createUser = async () => {
+      const response = await fetch("api/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dynamicUserId: dynamicUser.userId,
+          address: dynamicUser.verifiedCredentials[0].address,
+          telegramAuthToken,
+        }),
+      }).catch((error) => {
+        console.error("Could not createUser:", error);
+      });
+      if (response) {
+        const { efrogrUser: _efrogrUser } = await response.json();
+        console.log("Got response from user!", _efrogrUser);
+        setEfrogrUser(_efrogrUser);
+      }
+    };
+    createUser();
+  }, [dynamicUser]);
 
-  //   createUser();
-  // }, [dynamicUser]);
+  // Refresh leaderboard
+  useEffect(() => {
+    console.log("efrogrUserUpdated", efrogrUser);
+    const getLeaderboard = async () => {
+      console.log("fetching leaderboard", efrogrUser);
+      const response = await fetch("api/getLeaderboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          efrogrUserId: efrogrUser?.id,
+        }),
+      }).catch((error) => {
+        console.error("Could not update leaderboard:", error);
+      });
+      if (response) {
+        const { leaderboard: newLeaderboard, user: updatedUser } =
+          await response.json();
+        console.log("got leaderboard", leaderboard, updatedUser);
+        setLeaderboard(newLeaderboard);
+        setUserInfo(updatedUser);
+        if (updatedUser && efrogrUser)
+          if (
+            updatedUser.croakLeft.toString() !== efrogrUser.croakLeft.toString()
+          )
+            setEfrogrUser({
+              ...efrogrUser,
+              croakLeft: updatedUser.croakLeft.toString(),
+            });
+      }
+    };
 
-  // // Refresh leaderboard
-  // useEffect(() => {
-  //   console.log("efrogrUserUpdated", efrogrUser);
-  //   const getLeaderboard = async () => {
-  //     console.log("fetching leaderboard", efrogrUser);
-  //     const response = await fetch("api/getLeaderboard", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         efrogrUserId: efrogrUser?.id,
-  //       }),
-  //     }).catch((error) => {
-  //       console.error("Could not update leaderboard:", error);
-  //     });
-  //     if (response) {
-  //       const { leaderboard: newLeaderboard, user: updatedUser } =
-  //         await response.json();
-  //       console.log("got leaderboard", leaderboard, updatedUser);
-  //       setLeaderboard(newLeaderboard);
-  //       setUserInfo(updatedUser);
-  //       if (updatedUser && efrogrUser)
-  //         if (
-  //           updatedUser.croakLeft.toString() !== efrogrUser.croakLeft.toString()
-  //         )
-  //           setEfrogrUser({
-  //             ...efrogrUser,
-  //             croakLeft: updatedUser.croakLeft.toString(),
-  //           });
-  //     }
-  //   };
+    getLeaderboard(); // Fetch immediately
+    const intervalId = setInterval(getLeaderboard, 5000); // Fetch every 5 seconds
 
-  //   getLeaderboard(); // Fetch immediately
-  //   const intervalId = setInterval(getLeaderboard, 5000); // Fetch every 5 seconds
-
-  //   return () => clearInterval(intervalId); // Cleanup interval on unmount
-  // }, [efrogrUser]);
+    return () => clearInterval(intervalId); // Cleanup interval on unmount
+  }, [efrogrUser]);
 
   return (
     <EfrogrContext.Provider

@@ -7,7 +7,7 @@ export default function Header() {
 
   return (
     <div className="py-3 flex flex-row justify-between items-center space-y-3 w-full">
-      <Image src="/efrogr.png" alt="Efrogr by Locker" width={40} height={40} />
+      <Image src="/efrogr.png" alt="Efrogr by Locker" width={50} height={50} />
       <div className="flex flex-row justify-end items-center">
         {!isDynamicLoading && <DynamicWidget />}
       </div>

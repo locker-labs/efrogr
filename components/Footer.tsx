@@ -6,7 +6,7 @@ export default function Footer() {
   const iconSize = 28;
 
   return (
-    <footer className="py-5 w-full flex-col space-y-3 flex justify-center mt-8">
+    <>
       <div className="flex flex-col space-y-2">
         <p className="text-xxxs text-gray-500">brought to you by</p>
         <div className="flex space-x-4">
@@ -43,6 +43,6 @@ export default function Footer() {
           />
         </Link>
       </div>
-    </footer>
+    </>
   );
 }
