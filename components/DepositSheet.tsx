@@ -85,7 +85,7 @@ export function DepositSheet() {
             </div>
           </div>
           <div className="text-sm text-gray-500 text-left">
-            <span>In order to play, you'll need:</span>
+            <span>In order to play, you&apos;ll need:</span>
             <ul className="list-inside list-disc">
               <li>{CROAK_BUNDLE_FORMATTED.toLocaleString()} CROAK for game</li>
               <li>{MIN_ETH_DEPOSIT_FORMATTED.toString()} ETH for gas</li>
