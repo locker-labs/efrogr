@@ -46,6 +46,8 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --color-blue: 131, 26, 254;
+    --color-teal: 7, 255, 255;
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -81,6 +83,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  html {
+    @apply text-[18px];
+    /* font-size: 20px; Setting rem base value */
   }
 }
 

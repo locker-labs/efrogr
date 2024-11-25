@@ -15,25 +15,38 @@ import {
   CROAK_BUNDLE,
   CROAK_BUNDLE_FORMATTED,
   CROAK_PER_PLAY_FORMATTED,
+  DOCS_ADDRESS,
+  EMenuState,
   LOCKER_TREASURY,
 } from "@/lib/constants";
-import { IEfrogrUser } from "@/lib/types";
+import { useEfrogr } from "@/providers/EfrogrProvider";
+import { doesEfrogrUserNeedCredits } from "@/lib/payment";
+import Link from "next/link";
 
-export function BuyCreditsSheet({
-  open,
-  efrogrUser,
-  setEfrogrUser,
-  onDismiss,
-}: {
-  open: boolean;
-  efrogrUser: IEfrogrUser | null;
-  // @typescript-eslint/no-explicit-any
-  setEfrogrUser: any;
-  onDismiss: () => void;
-}) {
+export function BuyCreditsSheet() {
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState(false);
   const [txnHash, setTxnHash] = useState("");
+  const {
+    setMenuState,
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance,
+    setEfrogrUser,
+  } = useEfrogr();
+  const onDismiss = () => setMenuState(EMenuState.NOT_PLAYING);
+
+  const open = doesEfrogrUserNeedCredits(
+    efrogrUser,
+    menuState,
+    isCroakBalanceLoading,
+    croakBalance,
+    isEthBalanceLoading,
+    ethBalance
+  );
 
   // Prevent the sheet from being closed externally if txnHash is defined
   const isSheetOpen = open || Boolean(txnHash);
@@ -113,8 +126,8 @@ export function BuyCreditsSheet({
     <Sheet open={isSheetOpen} onOpenChange={(isOpen) => !isOpen && onDismiss()}>
       <SheetContent className="no-close">
         <SheetHeader>
-          <SheetTitle>Buy credits to play</SheetTitle>
-          <SheetDescription className="text-sm">
+          <SheetTitle className="text-left">Buy credits to play</SheetTitle>
+          <SheetDescription className="text-sm text-left">
             It&apos;s good for you and good for Efrogs.
           </SheetDescription>
         </SheetHeader>
@@ -147,12 +160,19 @@ export function BuyCreditsSheet({
             <p className="text-locker-500 font-semibold">
               Game fees go towards
             </p>
-            <ul className="list-inside list-disc text-sm  text-left">
-              <li>Jackpot distributed to random daily player</li>
-              <li>Lockup and save CROAK for 3 months</li>
-              <li>Contribution to Efrogs treasury</li>
+            <ul className="list-inside text-sm  text-left">
+              <li>💰 Jackpots </li>
+              <li>🤑 Lockup and save CROAK</li>
+              <li>🏦 Contribution to Efrogs treasury</li>
             </ul>
           </div>
+          <Link
+            href={DOCS_ADDRESS}
+            className="text-gray-500 mt-8 text-xs"
+            target="_blank"
+          >
+            Documentation
+          </Link>
         </div>
       </SheetContent>
     </Sheet>
