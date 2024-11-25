@@ -12,6 +12,7 @@ import { formatUnits } from "viem";
 import PlayPayButton from "./PlayPayButton";
 import CroakFace from "./CroakFace";
 import formatBigInt from "@/lib/formatBigInt";
+import { useEfrogr } from "@/providers/EfrogrProvider";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -19,6 +20,7 @@ dayjs.extend(duration);
 
 export default function Jackpot() {
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const { userInfo } = useEfrogr();
   const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
     address: JACKPOT_ADDRESS,
     token: CROAK_ADDRESS,
@@ -57,7 +59,9 @@ export default function Jackpot() {
     ? "WIN"
     : formatBigInt(BigInt(formatUnits(jackpotBalance?.value || BigInt(0), 18)));
 
-  const numEntries = "0 entries";
+  const numEntries = userInfo?.numEntries || 0;
+  const numEntriesStr = numEntries === 1 ? "entry" : "entries";
+  const numEntriesFormatted = `${numEntries} ${numEntriesStr}`;
   return (
     <div className="flex flex-col w-full bg-gradient-to-b border-2 border-[#831AFE] from-[#831AFE]/15 to-[#07FFFF]/15 rounded-2xl px-3 py-5 pb-3">
       <div className="flex flex-row w-full space-x-4">
@@ -84,7 +88,9 @@ export default function Jackpot() {
             <div className="font-semibold font-xs text-gray-600">
               {timeLeft}
             </div>
-            <div className="text-xxs text-[#646873]">You have {numEntries}</div>
+            <div className="text-xxs text-[#646873]">
+              You have {numEntriesFormatted}
+            </div>
           </div>
         </div>
       </div>

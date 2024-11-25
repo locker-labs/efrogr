@@ -99,10 +99,10 @@ export function DepositSheet() {
           <p className="text-muted-foreground text-xs break-all">
             CROAK balance: {formatUnits(croak, 18)}
           </p>
-          <p>
+          <p className="mt-8">
             <Link
               href={DOCS_ADDRESS}
-              className="text-gray-500 mt-8 text-xs"
+              className="text-muted-foreground text-xs"
               target="_blank"
             >
               Documentation
