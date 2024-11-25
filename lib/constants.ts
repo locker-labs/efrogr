@@ -1,7 +1,7 @@
 // general game variables
 export const grid = 50;
 export const canvasWidth = 300;
-export const canvasHeight = 450;
+export const canvasHeight = 500;
 
 // state of the actual game
 export enum EGameState {
@@ -55,3 +55,4 @@ export const CROAK_ADDRESS = "0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF";
 export const LOCKER_TREASURY = "0x119677b2a0f782cbd78f322f9b8ba6a3adf3c299";
 export const JACKPOT_ADDRESS = "0xd7F723f8EDeC8D6D62caa4Ecc2b5Ca1292618355";
 export const SAVINGS_ADDRESS = "0x0b6b725dddac21149e7a4e984d6e905a903d496a";
+export const DOCS_ADDRESS = "https://efrogr.gitbook.io/docs/";

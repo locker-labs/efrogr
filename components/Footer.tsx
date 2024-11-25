@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import xIcon from "@/public/x.svg";
 import tgIcon from "@/public/telegram.svg";
+import docsIcon from "@/public/docs.svg";
+import { DOCS_ADDRESS } from "@/lib/constants";
 export default function Footer() {
   const iconSize = 28;
 
@@ -40,6 +42,17 @@ export default function Footer() {
             width={iconSize}
             height={iconSize}
             alt="Locker on Telegram"
+          />
+        </Link>
+        <Link
+          href={DOCS_ADDRESS}
+          className="footer-text text-center text-sm text-gray-700"
+        >
+          <Image
+            src={docsIcon}
+            width={iconSize}
+            height={iconSize}
+            alt="Efrogr documentation"
           />
         </Link>
       </div>

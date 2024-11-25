@@ -19,27 +19,31 @@ export default function Leaderboard() {
         Leaderboard
       </span>
       <div className="grid grid-cols-3 grid-rows-5 text-xxxs space-x-1">
-        <div className="col-span-1 row-span-4 row-start-2 bg-[#BCBCBA]/25 rounded-lg py-2 text-center flex flex-col justify-center items-center space-y-1">
-          <Image src={rank1Icon} alt="Rank 1" width={40} height={40} />
-          <span>{cleanUsername(rank1.tgUsername)}</span>
-          <span className="text-gray-600 text-xxs font-bold text-ellipsis">
-            {rank1.highScore}
-          </span>
-        </div>
         {rank2 && (
-          <div className="col-span-1 row-span-4 row-start-1 bg-[#F2BF27]/25 rounded-lg py-2 text-center flex flex-col justify-center items-center space-y-1">
+          <div className="col-span-1 row-span-4 row-start-2 bg-[#BCBCBA]/25 rounded-lg py-2 text-center flex flex-col justify-center items-center space-y-1">
             <Image src={rank2Icon} alt="Rank 2" width={40} height={40} />
-            <span>{cleanUsername(rank2.tgUsername)}</span>
-            <span className="text-gray-600 text-xxs font-bold text-ellipsis">
+            <span className="break-all">{cleanUsername(rank2.tgUsername)}</span>
+            <span className="text-gray-600 text-xxs font-bold">
               {rank2.highScore}
+            </span>
+          </div>
+        )}
+        {rank1 && (
+          <div className="col-span-1 row-span-4 row-start-1 bg-[#F2BF27]/25 rounded-lg py-2 text-center flex flex-col justify-center items-center space-y-1">
+            <Image src={rank1Icon} alt="Rank 1" width={40} height={40} />
+            <span className="break-all">{cleanUsername(rank1.tgUsername)}</span>
+            <span className="text-gray-600 text-xxs font-bold">
+              {rank1.highScore}
             </span>
           </div>
         )}
         {rank3 && (
           <div className="col-span-1 row-span-4 row-start-2 bg-[#DD6D2C]/25 rounded-lg py-2 text-center flex flex-col justify-center items-center space-y-1">
             <Image src={rank3Icon} alt="Rank 3" width={40} height={40} />
-            <span>{cleanUsername(rank3.tgUsername)}</span>
-            <span className="text-gray-600 text-xxs font-bold text-ellipsis">
+            <span className="break-all">
+              {cleanUsername(rank3.tgUsername)}a
+            </span>
+            <span className="text-gray-600 text-xxs font-bold">
               {rank3.highScore}
             </span>
           </div>

@@ -9,7 +9,7 @@ import { useAccount, useBalance } from "wagmi";
 
 interface EfrogrContextProps {
   efrogrUser: IEfrogrUser | null;
-  setEfrogrUser: React.Dispatch<React.SetStateAction<IEfrogrUser>>;
+  setEfrogrUser: React.Dispatch<React.SetStateAction<IEfrogrUser | null>>;
   leaderboard: ILeaderboard[];
   menuState: EMenuState;
   setMenuState: React.Dispatch<React.SetStateAction<EMenuState>>;
