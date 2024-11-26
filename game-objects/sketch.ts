@@ -530,6 +530,25 @@ const sketch: Sketch = (p5) => {
       gameState === EGameState.GAME_OVER ||
       gameState === EGameState.OUT_OF_TIME
     ) {
+      if (menuState === EMenuState.PLAYING_FREE) {
+        frog = new Frog(
+          canvasWidth / 2 - grid / 2,
+          canvasHeight - grid + 10,
+          grid * 0.5,
+          0.1,
+          gameWon,
+          p5
+        );
+      } else {
+        frog = new Croak(
+          canvasWidth / 2 - grid / 2,
+          canvasHeight - grid + 10,
+          grid * 0.5,
+          0.1,
+          gameWon,
+          p5
+        );
+      }
       gameState = EGameState.GAME;
       score = 0;
     }
