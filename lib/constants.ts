@@ -44,8 +44,8 @@ export const TABLES = {
   EFROGR_LEADERBOARD: "efrogr_user_stats",
 };
 
-export const CROAK_PER_PLAY_FORMATTED = 300;
-export const CROAK_BUNDLE_FORMATTED = 1000;
+export const CROAK_PER_PLAY_FORMATTED = 333;
+export const CROAK_BUNDLE_FORMATTED = 999;
 export const MIN_ETH_DEPOSIT_FORMATTED = 0.00001;
 export const CROAK_BUNDLE = BigInt(CROAK_BUNDLE_FORMATTED * 10 ** 18);
 export const CROAK_PER_PLAY = BigInt(CROAK_PER_PLAY_FORMATTED * 10 ** 18);
