@@ -10,6 +10,7 @@ import {
   EMenuState,
 } from "@/lib/constants";
 
+import Croak from "@/game-objects/croak.js";
 import Frog from "@/game-objects/frog.js";
 import Car from "@/game-objects/car.js";
 import Log from "@/game-objects/log.js";
@@ -168,14 +169,25 @@ function resetGame(p5) {
   scenery = new Scenery(0, 0, p5);
 
   //resets frog
-  frog = new Frog(
-    canvasWidth / 2 - grid / 2,
-    canvasHeight - grid + 10,
-    grid * 0.5,
-    0.1,
-    gameWon,
-    p5
-  );
+  if (menuState === EMenuState.PLAYING_FREE) {
+    frog = new Frog(
+      canvasWidth / 2 - grid / 2,
+      canvasHeight - grid + 10,
+      grid * 0.5,
+      0.1,
+      gameWon,
+      p5
+    );
+  } else {
+    frog = new Croak(
+      canvasWidth / 2 - grid / 2,
+      canvasHeight - grid + 10,
+      grid * 0.5,
+      0.1,
+      gameWon,
+      p5
+    );
+  }
 
   frog.attach(null);
 
