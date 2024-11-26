@@ -356,6 +356,25 @@ const sketch: Sketch = (p5) => {
         console.log("start screen ");
         gameState = EGameState.GAME;
         score = 0;
+        if (menuState === EMenuState.PLAYING_FREE) {
+          frog = new Frog(
+            canvasWidth / 2 - grid / 2,
+            canvasHeight - grid + 10,
+            grid * 0.5,
+            0.1,
+            gameWon,
+            p5
+          );
+        } else {
+          frog = new Croak(
+            canvasWidth / 2 - grid / 2,
+            canvasHeight - grid + 10,
+            grid * 0.5,
+            0.1,
+            gameWon,
+            p5
+          );
+        }
       } else {
         console.log("playing screen ");
         switch (direction) {
@@ -496,19 +515,6 @@ const sketch: Sketch = (p5) => {
       frog.checkForWin(canvasWidth, 100);
     }
   };
-
-  // This causes problems with game start if user clicks on a button to start the game
-  // It gets picked up here and in the prop change logic
-  // p5.mousePressed = () => {
-  //   if (
-  //     gameState === EGameState.GAME_OVER ||
-  //     gameState === EGameState.OUT_OF_TIME ||
-  //     gameState === EGameState.START_SCREEN
-  //   ) {
-  //     gameState = EGameState.GAME;
-  //     score = 0;
-  //   }
-  // };
 
   p5.keyPressed = () => {
     const { keyCode, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW } = p5;
