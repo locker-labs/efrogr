@@ -34,7 +34,7 @@ export default function Footer() {
           />
         </Link>
         <Link
-          href="https://discord.gg/locker"
+          href="https://t.me/+stsNEbe16tU5MTY5"
           className="footer-text text-center text-sm text-gray-700"
         >
           <Image
