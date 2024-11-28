@@ -57,7 +57,13 @@ export default function Jackpot() {
   // 'WIN CROAK' if jackpot is loading, otherwise show the jackpot amount
   const jackpotAmount = isJackpotLoading
     ? "WIN"
-    : formatBigInt(BigInt(formatUnits(jackpotBalance?.value || BigInt(0), 18)));
+    : formatBigInt(
+        BigInt(
+          Math.round(
+            Number(formatUnits(jackpotBalance?.value || BigInt(0), 18))
+          )
+        )
+      );
 
   const numEntries = userInfo?.numEntries || 0;
   const numEntriesStr = numEntries === 1 ? "entry" : "entries";
