@@ -28,58 +28,31 @@ export default function Jackpot() {
     query: { refetchInterval: 60_000 },
   });
 
-
-To adjust the countdown so that it initially ends at midnight UTC on December 3rd and then resets every 24 hours thereafter, you can modify the calculateTimeLeft function within your React component. Here’s how you can implement this:
-
-typescript
-Copy code
-import jackpotIcon from "@/public/jackpot.svg";
-import Image from "next/image";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import duration from "dayjs/plugin/duration";
-import { useEffect, useState } from "react";
-import { JACKPOT_ADDRESS, CROAK_ADDRESS } from "@/lib/constants";
-import { linea } from "viem/chains";
-import { useBalance } from "wagmi";
-import { formatUnits } from "viem";
-import PlayPayButton from "./PlayPayButton";
-import CroakFace from "./CroakFace";
-import formatBigInt from "@/lib/formatBigInt";
-import { useEfrogr } from "@/providers/EfrogrProvider";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(duration);
-
-export default function Jackpot() {
-  const [timeLeft, setTimeLeft] = useState<string | null>(null);
-  const { userInfo } = useEfrogr();
-  const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
-    address: JACKPOT_ADDRESS,
-    token: CROAK_ADDRESS,
-    chainId: linea.id,
-    query: { refetchInterval: 60_000 },
-  });
-
   useEffect(() => {
-    const initialDeadline = dayjs.utc("2023-12-03T00:00:00");
+    const initialDeadline = dayjs.utc("2024-12-03T");
     const calculateTimeLeft = () => {
       const now = dayjs().utc();
       let targetTime = initialDeadline;
 
       // If the initial deadline has passed, calculate the next midnight UTC
       if (now.isAfter(initialDeadline)) {
-        targetTime = now.startOf('day').add(1, 'day'); // Set to the next day's midnight
+        console.log("Initial deadline passed, calculating next midnight");
+        targetTime = now.startOf("day").add(1, "day");
       }
 
       const diff = dayjs.duration(targetTime.diff(now));
+      const days = diff.days();
+      console.log("days", days);
       const hours = diff.hours();
       const minutes = diff.minutes();
       const seconds = diff.seconds();
 
-      setTimeLeft(`${hours}h : ${minutes}m : ${seconds}s`);
+      // Format the time left string to include days if more than 0
+      if (days > 0) {
+        setTimeLeft(`${days}d : ${hours}h : ${minutes}m`);
+      } else {
+        setTimeLeft(`${hours}h : ${minutes}m : ${seconds}s`);
+      }
     };
 
     calculateTimeLeft();
@@ -87,7 +60,7 @@ export default function Jackpot() {
 
     return () => clearInterval(timer);
   }, []);
-  
+
   const jackpotAmount = isJackpotLoading
     ? "WIN"
     : formatBigInt(
