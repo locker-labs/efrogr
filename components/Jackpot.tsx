@@ -28,18 +28,53 @@ export default function Jackpot() {
     query: { refetchInterval: 60_000 },
   });
 
-  // Countdown to next raffle
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = dayjs().tz("America/Chicago");
-      let next7PM = dayjs().tz("America/Chicago").hour(19).minute(0).second(0);
 
-      // If it's past 7 PM, set to the next day's 7 PM
-      if (now.isAfter(next7PM)) {
-        next7PM = next7PM.add(1, "day");
+To adjust the countdown so that it initially ends at midnight UTC on December 3rd and then resets every 24 hours thereafter, you can modify the calculateTimeLeft function within your React component. Here’s how you can implement this:
+
+typescript
+Copy code
+import jackpotIcon from "@/public/jackpot.svg";
+import Image from "next/image";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import duration from "dayjs/plugin/duration";
+import { useEffect, useState } from "react";
+import { JACKPOT_ADDRESS, CROAK_ADDRESS } from "@/lib/constants";
+import { linea } from "viem/chains";
+import { useBalance } from "wagmi";
+import { formatUnits } from "viem";
+import PlayPayButton from "./PlayPayButton";
+import CroakFace from "./CroakFace";
+import formatBigInt from "@/lib/formatBigInt";
+import { useEfrogr } from "@/providers/EfrogrProvider";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(duration);
+
+export default function Jackpot() {
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const { userInfo } = useEfrogr();
+  const { data: jackpotBalance, isLoading: isJackpotLoading } = useBalance({
+    address: JACKPOT_ADDRESS,
+    token: CROAK_ADDRESS,
+    chainId: linea.id,
+    query: { refetchInterval: 60_000 },
+  });
+
+  useEffect(() => {
+    const initialDeadline = dayjs.utc("2023-12-03T00:00:00");
+    const calculateTimeLeft = () => {
+      const now = dayjs().utc();
+      let targetTime = initialDeadline;
+
+      // If the initial deadline has passed, calculate the next midnight UTC
+      if (now.isAfter(initialDeadline)) {
+        targetTime = now.startOf('day').add(1, 'day'); // Set to the next day's midnight
       }
 
-      const diff = dayjs.duration(next7PM.diff(now));
+      const diff = dayjs.duration(targetTime.diff(now));
       const hours = diff.hours();
       const minutes = diff.minutes();
       const seconds = diff.seconds();
@@ -47,14 +82,12 @@ export default function Jackpot() {
       setTimeLeft(`${hours}h : ${minutes}m : ${seconds}s`);
     };
 
-    // Update countdown every second
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
 
-    return () => clearInterval(timer); // Cleanup on unmount
+    return () => clearInterval(timer);
   }, []);
-
-  // 'WIN CROAK' if jackpot is loading, otherwise show the jackpot amount
+  
   const jackpotAmount = isJackpotLoading
     ? "WIN"
     : formatBigInt(
@@ -68,6 +101,7 @@ export default function Jackpot() {
   const numEntries = userInfo?.numEntries || 0;
   const numEntriesStr = numEntries === 1 ? "entry" : "entries";
   const numEntriesFormatted = `${numEntries} ${numEntriesStr}`;
+
   return (
     <div className="flex flex-col w-full bg-gradient-to-b border-2 border-[#831AFE] from-[#831AFE]/15 to-[#07FFFF]/15 rounded-2xl px-3 py-5 pb-3">
       <div className="flex flex-row w-full space-x-4">
