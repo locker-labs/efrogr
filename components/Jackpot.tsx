@@ -28,33 +28,37 @@ export default function Jackpot() {
     query: { refetchInterval: 60_000 },
   });
 
-  // Countdown to next raffle
   useEffect(() => {
+    const initialDeadline = dayjs.utc("2024-12-03T");
     const calculateTimeLeft = () => {
-      const now = dayjs().tz("America/Chicago");
-      let next7PM = dayjs().tz("America/Chicago").hour(19).minute(0).second(0);
+      const now = dayjs().utc();
+      let targetTime = initialDeadline;
 
-      // If it's past 7 PM, set to the next day's 7 PM
-      if (now.isAfter(next7PM)) {
-        next7PM = next7PM.add(1, "day");
+      // If the initial deadline has passed, calculate the next midnight UTC
+      if (now.isAfter(initialDeadline)) {
+        targetTime = now.startOf("day").add(1, "day");
       }
 
-      const diff = dayjs.duration(next7PM.diff(now));
+      const diff = dayjs.duration(targetTime.diff(now));
+      const days = diff.days();
       const hours = diff.hours();
       const minutes = diff.minutes();
       const seconds = diff.seconds();
 
-      setTimeLeft(`${hours}h : ${minutes}m : ${seconds}s`);
+      // Format the time left string to include days if more than 0
+      if (days > 0) {
+        setTimeLeft(`${days}d : ${hours}h : ${minutes}m`);
+      } else {
+        setTimeLeft(`${hours}h : ${minutes}m : ${seconds}s`);
+      }
     };
 
-    // Update countdown every second
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
 
-    return () => clearInterval(timer); // Cleanup on unmount
+    return () => clearInterval(timer);
   }, []);
 
-  // 'WIN CROAK' if jackpot is loading, otherwise show the jackpot amount
   const jackpotAmount = isJackpotLoading
     ? "WIN"
     : formatBigInt(
@@ -68,6 +72,7 @@ export default function Jackpot() {
   const numEntries = userInfo?.numEntries || 0;
   const numEntriesStr = numEntries === 1 ? "entry" : "entries";
   const numEntriesFormatted = `${numEntries} ${numEntriesStr}`;
+
   return (
     <div className="flex flex-col w-full bg-gradient-to-b border-2 border-[#831AFE] from-[#831AFE]/15 to-[#07FFFF]/15 rounded-2xl px-3 py-5 pb-3">
       <div className="flex flex-row w-full space-x-4">
