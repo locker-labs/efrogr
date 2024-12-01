@@ -36,13 +36,11 @@ export default function Jackpot() {
 
       // If the initial deadline has passed, calculate the next midnight UTC
       if (now.isAfter(initialDeadline)) {
-        console.log("Initial deadline passed, calculating next midnight");
         targetTime = now.startOf("day").add(1, "day");
       }
 
       const diff = dayjs.duration(targetTime.diff(now));
       const days = diff.days();
-      console.log("days", days);
       const hours = diff.hours();
       const minutes = diff.minutes();
       const seconds = diff.seconds();
