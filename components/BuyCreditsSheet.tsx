@@ -161,9 +161,8 @@ export function BuyCreditsSheet() {
               Game fees go towards
             </p>
             <ul className="list-inside text-sm  text-left">
-              <li>💰 Jackpots </li>
-              <li>🤑 Lockup and save CROAK</li>
-              <li>🏦 Contribution to Efrogs treasury</li>
+              <li>💰 Jackpots (50%)</li>
+              <li>🤑 You save CROAK (30%)</li>
             </ul>
           </div>
           <Link
