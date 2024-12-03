@@ -5,7 +5,11 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import duration from "dayjs/plugin/duration";
 import { useEffect, useState } from "react";
-import { JACKPOT_ADDRESS, CROAK_ADDRESS } from "@/lib/constants";
+import {
+  JACKPOT_ADDRESS,
+  CROAK_ADDRESS,
+  SAVINGS_FRACTION,
+} from "@/lib/constants";
 import { linea } from "viem/chains";
 import { useBalance } from "wagmi";
 import { formatUnits } from "viem";
@@ -115,7 +119,8 @@ export default function Jackpot() {
       </div>
       <div className="flex flex-row w-full text-xxxs text-gray-500 mt-7">
         <span className="text-center w-full">
-          Get back 25% of your entry fees after 3 months
+          Get back {Math.round(SAVINGS_FRACTION * 100)}% of your entry fees
+          after 3 months
         </span>
       </div>
     </div>

@@ -56,3 +56,4 @@ export const LOCKER_TREASURY = "0x119677b2a0f782cbd78f322f9b8ba6a3adf3c299";
 export const JACKPOT_ADDRESS = "0xd7F723f8EDeC8D6D62caa4Ecc2b5Ca1292618355";
 export const SAVINGS_ADDRESS = "0x4A67BbF59916D64362b4f2d27Bf4D1956b38D5fE";
 export const DOCS_ADDRESS = "https://efrogr.gitbook.io/docs/";
+export const SAVINGS_FRACTION = 0.3;

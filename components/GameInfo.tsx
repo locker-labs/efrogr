@@ -1,4 +1,5 @@
 import cleanUsername from "@/lib/cleanUsername";
+import { SAVINGS_FRACTION } from "@/lib/constants";
 import { IEfrogrUser, ILeaderboard } from "@/lib/types";
 
 export default function GameInfo({
@@ -45,7 +46,11 @@ export default function GameInfo({
               <p>Lives left: {lives.toString()}</p>
               <p>High score: {userInfo.highScore}</p>
               <p>
-                Saved: {(userInfo.croakUsed / 4 / 10 ** 18).toLocaleString()}{" "}
+                Saved:{" "}
+                {(
+                  (userInfo.croakUsed * SAVINGS_FRACTION) /
+                  10 ** 18
+                ).toLocaleString()}{" "}
                 CROAK
               </p>
             </>
