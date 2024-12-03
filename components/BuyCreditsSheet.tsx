@@ -158,7 +158,7 @@ export function BuyCreditsSheet() {
 
           <div>
             <p className="text-locker-500 font-semibold">
-              Game fees go towards
+              The majority of fees go back to you and the community.
             </p>
             <ul className="list-inside text-sm  text-left">
               <li>💰 Jackpots (50%)</li>
