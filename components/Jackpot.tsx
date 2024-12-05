@@ -17,6 +17,13 @@ import PlayPayButton from "./PlayPayButton";
 import CroakFace from "./CroakFace";
 import formatBigInt from "@/lib/formatBigInt";
 import { useEfrogr } from "@/providers/EfrogrProvider";
+import { Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -85,12 +92,29 @@ export default function Jackpot() {
             src={jackpotIcon}
             width={101}
             height={114}
-            alt="Daily jackpot"
+            alt="Daily Giveaway"
           />
         </div>
         <div className="flex flex-col flex-grow text-center space-y-1">
-          <span className="text-sm text-locker-600 font-semibold">
-            Daily Jackpot
+          <span className="text-sm text-locker-600 font-semibold flex flex-row items-center justify-center">
+            Daily Giveaway
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info size={14} className="ml-1" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>🎟️ Every paid play gives you one entry to win.</p>
+                  <p>🎲 Winner is selected randomly from all entries.</p>
+                  <p>0️⃣ Your number of entries reset every day.</p>
+                  <p>💯 High score does not increase your chances.</p>
+                  <p>
+                    🏆 In the future, we&apos;ll have additional rewards for
+                    high score.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </span>
           <span className="space-x-1 align-middle justify-center items-center p-1 text-sm text-locker-600 flex flex-row rounded-2xl w-full border-[#FFC053] border-2 bg-[#FFFCB9]">
             <CroakFace />
