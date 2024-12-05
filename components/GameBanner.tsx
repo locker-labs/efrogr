@@ -3,7 +3,7 @@ export default function GameBanner() {
     <div className="flex flex-col w-full my-3 text-center">
       <p className="text-gray-500 text-sm">Save CROAK every time you play</p>
       <p className="text-gray-500 text-sm">
-        Play to win for entry in daily jackpot
+        Play to win for entry in daily giveaway
       </p>
     </div>
   );

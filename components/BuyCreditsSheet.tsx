@@ -161,7 +161,7 @@ export function BuyCreditsSheet() {
               The majority of fees go back to you and the community.
             </p>
             <ul className="list-inside text-sm  text-left">
-              <li>💰 Jackpots (50%)</li>
+              <li>💰 Give aways (50%)</li>
               <li>🤑 You save CROAK (30%)</li>
             </ul>
           </div>
