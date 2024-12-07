@@ -40,7 +40,7 @@ export default function Jackpot() {
   });
 
   useEffect(() => {
-    const initialDeadline = dayjs.utc("2024-12-03T");
+    const initialDeadline = dayjs.utc("2024-12-09T");
     const calculateTimeLeft = () => {
       const now = dayjs().utc();
       let targetTime = initialDeadline;
