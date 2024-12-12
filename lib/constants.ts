@@ -57,3 +57,12 @@ export const JACKPOT_ADDRESS = "0xd7F723f8EDeC8D6D62caa4Ecc2b5Ca1292618355";
 export const SAVINGS_ADDRESS = "0x4A67BbF59916D64362b4f2d27Bf4D1956b38D5fE";
 export const DOCS_ADDRESS = "https://efrogr.gitbook.io/docs/";
 export const SAVINGS_FRACTION = 0.3;
+
+export const STREAK_PARAM = "o";
+export const STREAK_GOALS = [
+  { day: 0, croakFormatted: 10 },
+  { day: 1, croakFormatted: 50 },
+  { day: 30, croakFormatted: 100 },
+  { day: 50, croakFormatted: 500 },
+  { day: 90, croakFormatted: 1000 },
+];

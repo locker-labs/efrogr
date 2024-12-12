@@ -3,6 +3,7 @@ import { BuyCreditsSheet } from "../BuyCreditsSheet";
 import { DepositSheet } from "../DepositSheet";
 import Jackpot from "../Jackpot";
 import PlayFreeButton from "../PlayFreeButton";
+import StreaksDrawer from "../StreaksDrawer";
 
 export default function HomeScreen() {
   const { efrogrUser } = useEfrogr();
@@ -17,6 +18,7 @@ export default function HomeScreen() {
       )}
       <DepositSheet />
       <BuyCreditsSheet />
+      <StreaksDrawer />
     </div>
   );
 }
