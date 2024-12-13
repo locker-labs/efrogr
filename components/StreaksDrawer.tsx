@@ -1,38 +1,41 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation"; // Import from next/navigation
 import flameIcon from "@/public/flame.svg";
 import croakFaceIcon from "@/public/croak-face.svg";
 import Image from "next/image";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { DrawerContent, Drawer } from "./ui/drawer";
-import { STREAK_GOALS, STREAK_PARAM } from "@/lib/constants";
+import { STREAK_COOKIE, STREAK_GOALS } from "@/lib/constants";
 import { useEfrogr } from "@/providers/EfrogrProvider";
+import { useCookies } from "next-client-cookies";
 
 export default function StreakDrawer() {
-  const router = useRouter(); // Get the router
-  const searchParams = useSearchParams(); // Get the search params
   const { userInfo } = useEfrogr(); // Get the efrogrUser from the EfrogrProvider
+  const cookies = useCookies();
 
   // Get the current query parameters
-  const params = new URLSearchParams(searchParams.toString());
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
+  // console.log("userInfo1", userInfo);
 
-  if (params.get(STREAK_PARAM) !== STREAK_PARAM) return null; // Return null if 'o' is not 'streak'
+  useEffect(() => {
+    // console.log("userInfo", userInfo);
+    const streak = userInfo?.currentStreak?.toString();
+    if (!streak) return;
 
-  // Function to handle closing the modal and removing 'o' param
-  const handleCloseDrawer = () => {
-    params.delete(STREAK_PARAM); // Remove 'o' from the query
-
-    // Replace the current URL without the 'o' param
-    router.replace(`?${params.toString()}`, { scroll: true });
-
-    // Trigger the passed-in closeModal function to close the modal
-    setIsOpen(false);
-  };
+    const lastStreak = cookies.get(STREAK_COOKIE);
+    // console.log("lastStreak", lastStreak);
+    if (!lastStreak || lastStreak !== streak) {
+      cookies.set(STREAK_COOKIE, streak);
+      setIsOpen(true);
+    }
+  }, [userInfo?.currentStreak]);
 
   const streak = userInfo?.currentStreak || 0;
   const hasStreak = !!STREAK_GOALS.find((goal) => goal.day === streak);
+
+  const handleCloseDrawer = () => {
+    setIsOpen(false);
+  };
 
   return (
     <Drawer open={isOpen} onOpenChange={handleCloseDrawer}>

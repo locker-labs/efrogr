@@ -3,6 +3,7 @@ import "./globals.css";
 import DynamicProvider from "@/providers/DynamicProvider";
 import { Inter } from "next/font/google";
 import { DynamicLoadingProvider } from "@/providers/DynamicLoadingProvider";
+import { CookiesProvider } from "next-client-cookies/server";
 
 export const metadata: Metadata = {
   title: "Efrogr by Locker",
@@ -22,7 +23,9 @@ export default function RootLayout({
         className={`flex flex-col ${inter.className} antialiased items-center justify-center w-full`}
       >
         <DynamicProvider>
-          <DynamicLoadingProvider>{children}</DynamicLoadingProvider>
+          <DynamicLoadingProvider>
+            <CookiesProvider>{children}</CookiesProvider>
+          </DynamicLoadingProvider>
         </DynamicProvider>
       </body>
     </html>
