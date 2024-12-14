@@ -39,8 +39,9 @@ export default function Jackpot() {
     query: { refetchInterval: 60_000 },
   });
 
+  const initialDate = process.env.NEXT_PUBLIC_INITIAL_DATE || "2024-12-09T";
   useEffect(() => {
-    const initialDeadline = dayjs.utc("2024-12-09T");
+    const initialDeadline = dayjs.utc(initialDate);
     const calculateTimeLeft = () => {
       const now = dayjs().utc();
       let targetTime = initialDeadline;
