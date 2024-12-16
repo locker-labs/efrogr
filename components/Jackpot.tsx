@@ -113,6 +113,11 @@ export default function Jackpot() {
                     🏆 In the future, we&apos;ll have additional rewards for
                     high score.
                   </p>
+                  <p className="mt-2">
+                    <a href="https://locker.money/efrogs" target="_blank">
+                      No purchase necessary. See terms.
+                    </a>
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

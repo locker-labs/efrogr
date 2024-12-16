@@ -59,11 +59,11 @@ export const DOCS_ADDRESS = "https://efrogr.gitbook.io/docs/";
 export const SAVINGS_FRACTION = 0.3;
 
 export const STREAK_PARAM = "o";
-export const STREAK_GOALS = [
-  { day: 1, croakFormatted: 10 },
-  { day: 2, croakFormatted: 50 },
-  { day: 30, croakFormatted: 100 },
-  { day: 50, croakFormatted: 500 },
-  { day: 90, croakFormatted: 1000 },
+export const STREAK_GOALS: { day: number; croakFormatted: number | null }[] = [
+  { day: 7, croakFormatted: null },
+  { day: 14, croakFormatted: null },
+  { day: 30, croakFormatted: null },
+  { day: 50, croakFormatted: null },
+  { day: 90, croakFormatted: null },
 ];
 export const STREAK_COOKIE = "efrogr-streak";

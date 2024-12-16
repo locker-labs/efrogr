@@ -70,7 +70,7 @@ export default function StreakDrawer() {
                     alt="Streak for CROAK"
                   />
                   <span className="mt-2">
-                    {goal.croakFormatted.toLocaleString()}
+                    {goal?.croakFormatted?.toLocaleString() || "???"}
                   </span>
 
                   <span>CROAK</span>
