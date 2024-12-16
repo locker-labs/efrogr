@@ -33,6 +33,7 @@ export type ILeaderboard = {
   croakLeft: number;
   tgUsername: string;
   numEntries: number;
+  currentStreak: number;
 };
 
 export type IGameResult = {
