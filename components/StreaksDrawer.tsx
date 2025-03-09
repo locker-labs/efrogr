@@ -70,10 +70,10 @@ export default function StreakDrawer() {
                     alt="Streak for CROAK"
                   />
                   <span className="mt-2">
-                    {goal?.croakFormatted?.toLocaleString() || "???"}
+                    ${goal?.croakFormatted?.toLocaleString() || "???"}
                   </span>
-
-                  <span>CROAK</span>
+                  <span>in</span>
+                  <span>$CROAK</span>
                 </div>
                 <span className="mt-1">Day {goal.day}</span>
               </div>

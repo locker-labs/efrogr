@@ -48,7 +48,12 @@ export default function Jackpot() {
 
       // If the initial deadline has passed, calculate the next midnight UTC
       if (now.isAfter(initialDeadline)) {
-        targetTime = now.startOf("day").add(1, "day");
+        // If today is Saturday, the next deadline is Monday
+        if (now.day() === 6) {
+          targetTime = now.startOf("day").add(2, "day");
+        } else {
+          targetTime = now.startOf("day").add(1, "day");
+        }
       }
 
       const diff = dayjs.duration(targetTime.diff(now));
