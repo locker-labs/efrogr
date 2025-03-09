@@ -1,4 +1,5 @@
 import { EGameState, EMenuState } from "./constants";
+import type { Address } from "viem";
 
 export type IEfrogrTgJson = {
   authDate: number;
@@ -17,6 +18,7 @@ export type IEfrogrUser = {
   address: string;
   tgJson: IEfrogrTgJson;
   croakLeft: string;
+  savingsAddress: Address | undefined;
 };
 
 export type IEfrogrPlay = {

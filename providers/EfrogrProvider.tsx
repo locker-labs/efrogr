@@ -4,7 +4,7 @@ import { CROAK_ADDRESS, EMenuState, EUserDirection } from "@/lib/constants";
 import { useDynamicContext } from "@/lib/dynamic";
 import { IEfrogrUser, IGameResult, ILeaderboard } from "@/lib/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { linea } from "viem/chains";
+import { linea, sepolia } from "viem/chains";
 import { useAccount, useBalance } from "wagmi";
 
 interface EfrogrContextProps {
@@ -24,6 +24,10 @@ interface EfrogrContextProps {
   isEthBalanceLoading: boolean;
   croakBalance: any;
   isCroakBalanceLoading: boolean;
+  savingsEthBalance: any;
+  isSavingsEthBalanceLoading: boolean;
+  savingsCroakBalance: any;
+  isSavingsCroakBalanceLoading: boolean;
 }
 
 const EfrogrContext = createContext<EfrogrContextProps | undefined>(undefined);
@@ -52,6 +56,23 @@ export const EfrogrProvider: React.FC<{
     chainId: linea.id,
     query: { refetchInterval: 5000 },
   });
+
+  const { data: savingsCroakBalance, isLoading: isSavingsCroakBalanceLoading } =
+    useBalance({
+      address: efrogrUser?.savingsAddress,
+      token: CROAK_ADDRESS,
+      // TODO: change to linea
+      chainId: sepolia.id,
+      query: { refetchInterval: 5000 },
+    });
+
+  const { data: savingsEthBalance, isLoading: isSavingsEthBalanceLoading } =
+    useBalance({
+      address: efrogrUser?.savingsAddress,
+      // TODO: change to linea
+      chainId: sepolia.id,
+      query: { refetchInterval: 5000 },
+    });
 
   const [userDirection, setUserDirection] = useState<{
     direction: EUserDirection;
@@ -134,6 +155,26 @@ export const EfrogrProvider: React.FC<{
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, [efrogrUser]);
 
+  // useEffect(() => {
+  //   console.log("Dynamic User", dynamicUser);
+  //   if (!dynamicUser) {
+  //     return;
+  //   }
+  //   const getSavingsAddress = async () => {
+  //     const modularAccountV2Client = await getModularAccountV2Client();
+  //     const _savingsAddress = await modularAccountV2Client
+  //       .getAddress()
+  //       .catch((error) => {
+  //         console.error("Could not get Savings Address:", error);
+  //       });
+  //     console.log({ _savingsAddress });
+  //     if (_savingsAddress) {
+  //       setSavingsAddress(_savingsAddress);
+  //     }
+  //   };
+  //   getSavingsAddress();
+  // }, [dynamicUser]);
+
   return (
     <EfrogrContext.Provider
       value={{
@@ -151,6 +192,10 @@ export const EfrogrProvider: React.FC<{
         croakBalance,
         isCroakBalanceLoading,
         setEfrogrUser,
+        savingsCroakBalance,
+        isSavingsCroakBalanceLoading,
+        savingsEthBalance,
+        isSavingsEthBalanceLoading,
       }}
     >
       {children}

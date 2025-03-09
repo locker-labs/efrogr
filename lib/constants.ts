@@ -13,6 +13,7 @@ export enum EGameState {
 
 // state of the menu before the game
 export enum EMenuState {
+  SAVINGS_MENU = "SAVINGS_MENU",
   NOT_PLAYING = "NOT_PLAYING",
   PLAYING_FREE = "PLAYING_FREE",
   PLAYING_JACKPOT = "PLAYING_JACKPOT",

@@ -45,6 +45,8 @@ export default async function createEfrogrUser({
     address,
     tgJson,
     croakLeft: DEFAULT_CREDITS.toString(),
+    // TODO: generate savingsAddress using dynamic and MAv2Client
+    savingsAddress: undefined,
   };
 
   console.log("newUser", newUser);

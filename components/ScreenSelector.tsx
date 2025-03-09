@@ -40,6 +40,7 @@ export default function ScreenSelector() {
 
   switch (menuState) {
     case EMenuState.NOT_PLAYING:
+    case EMenuState.SAVINGS_MENU:
       return <HomeScreen />;
     case EMenuState.PLAYING_JACKPOT:
     case EMenuState.PLAYING_FREE:

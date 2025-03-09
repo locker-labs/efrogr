@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@account-kit/smart-contracts": "^4.14.0",
+    "@alchemy/aa-alchemy": "3.2.1",
+    "@alchemy/aa-core": "3.2.1",
     "@dynamic-labs/ethereum": "^3.6.3",
     "@dynamic-labs/global-wallet": "^3.6.3",
     "@dynamic-labs/sdk-react-core": "^3.6.3",
