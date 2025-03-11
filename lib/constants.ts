@@ -60,10 +60,10 @@ export const SAVINGS_FRACTION = 0.3;
 
 export const STREAK_PARAM = "o";
 export const STREAK_GOALS: { day: number; croakFormatted: number | null }[] = [
-  { day: 7, croakFormatted: null },
-  { day: 14, croakFormatted: null },
-  { day: 30, croakFormatted: null },
-  { day: 50, croakFormatted: null },
-  { day: 90, croakFormatted: null },
+  { day: 7, croakFormatted: 3 },
+  { day: 14, croakFormatted: 8 },
+  { day: 30, croakFormatted: 20 },
+  { day: 50, croakFormatted: 50 },
+  { day: 90, croakFormatted: 100 },
 ];
 export const STREAK_COOKIE = "efrogr-streak";
